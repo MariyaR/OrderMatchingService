@@ -1,14 +1,16 @@
+version: "3.8"
+
 services:
 
   postgres:
     image: postgres:16
     container_name: postgres
     environment:
-      POSTGRES_USER: adminTraider
-      POSTGRES_PASSWORD: adminTraider
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: trade_db
     ports:
-      - "5434:5432"
+      - "5432:5432"
     networks:
       - mypnetwork
 
@@ -44,12 +46,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5434/trade_db
-      SPRING_DATASOURCE_USERNAME: adminTraider
-      SPRING_DATASOURCE_PASSWORD: adminTraider
       POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5434
+      POSTGRES_PORT: 5432
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - mypnetwork
 
