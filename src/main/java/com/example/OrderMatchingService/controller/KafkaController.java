@@ -1,11 +1,9 @@
 package com.example.OrderMatchingService.controller;
 
 
+import com.example.OrderMatchingService.dto.MessageDto;
 import com.example.OrderMatchingService.service.OrderProducerService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/kafka")
@@ -18,8 +16,8 @@ public class KafkaController {
   }
 
   @PostMapping("/send")
-  public String sendMessage(@RequestParam String message) {
-    //.sendMessage(message);
+  public String sendMessage(@RequestBody MessageDto messageDto) {
+    producerService.sendMessage(messageDto.getText());
     return "Message sent to Kafka topic!";
   }
 }

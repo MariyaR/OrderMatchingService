@@ -8,9 +8,11 @@ services:
       POSTGRES_PASSWORD: adminTraider
       POSTGRES_DB: trade_db
     ports:
-      - "5434:5432"
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
-      - mypnetwork
+      - mynetwork
 
   kafka:
     image: bitnami/kafka:latest
@@ -31,31 +33,32 @@ services:
     volumes:
       - kafka_data:/bitnami/kafka
     networks:
-      - mypnetwork
+      - mynetwork
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: springboot-app
-    depends_on:
-      - kafka
-      - postgres
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5434/trade_db
-      SPRING_DATASOURCE_USERNAME: adminTraider
-      SPRING_DATASOURCE_PASSWORD: adminTraider
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5434
-    networks:
-      - mypnetwork
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: springboot-app
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trade_db
+#      SPRING_DATASOURCE_USERNAME: adminTraider
+#      SPRING_DATASOURCE_PASSWORD: adminTraider
+#    networks:
+#      - mynetwork
+#    depends_on:
+#      - kafka
+#      - postgres
+#    restart: always
 
 volumes:
   kafka_data:
+  pgdata:
 
 networks:
-  mypnetwork:
+  mynetwork:
     driver: bridge
+    name: mynetwork
