@@ -17,26 +17,42 @@ import java.util.UUID;
 public class Order {
   @Id
   @GeneratedValue
-  @Column(name = "order_id")  // Specify the column name in the database (order_id)
+  @Column(name = "order_id")
   private UUID orderID;
 
-  @Column(name = "user_id", nullable = false)  // Specify the column name for user_id
+  @Column(name = "user_id", nullable = false)
   private UUID userId;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "operation_type", nullable = false)  // Specify the column name for operation_type
+  @Column(name = "operation_type", nullable = false)
   private OperationType operationType;
 
-  @Column(name = "ticker_name", nullable = false)  // Specify the column name for ticker_name
+  @Column(name = "ticker_name", nullable = false)
   private String tickerName;
 
-  @Column(name = "quantity", nullable = false)  // Specify the column name for quantity
+  @Column(name = "quantity", nullable = false)
+  @NonNull
   private Integer quantity;
 
-  @Column(name = "price", nullable = false)  // Specify the column name for price
-  private Double price;
+  @Column(name = "price", nullable = false)
+  @NonNull
+  private Long price;
 
-  @Column(name = "created_at", nullable = false)  // Specify the column name for created_at
+  @Column(name = "created_at", nullable = false)
   private Date createdAt;
 
+  public boolean isSellOrder() {
+    return operationType == OperationType.SELL;
+  }
+  public boolean isBuyOrder() {
+    return operationType == OperationType.BUY;
+  }
+
+  public void increaseQuantity(int delta) {
+    quantity += delta;
+  }
+
+  public void decreaseQuantity(int delta) {
+    quantity -= delta;
+  }
 }

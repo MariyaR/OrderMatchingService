@@ -15,6 +15,6 @@ public class OrderDto {
   private OperationType operationType;
   private String tickerName;
   private int quantity;
-  private Double price;
+  private Long price;
   private Date createdAt;
 }

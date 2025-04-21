@@ -7,6 +7,6 @@ CREATE TABLE "orders"
   operation_type VARCHAR(5) NOT NULL,
   ticker_name VARCHAR(5) NOT NULL,
   quantity INT NOT NULL,
-  price DECIMAL NOT NULL,
+  price BIGINT NOT NULL,
   created_at TIMESTAMP NOT NULL
 );
