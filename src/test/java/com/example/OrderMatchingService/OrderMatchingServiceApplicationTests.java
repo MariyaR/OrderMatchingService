@@ -3,6 +3,8 @@ package com.example.OrderMatchingService;
 import com.example.OrderMatchingService.domain.OperationType;
 import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.Trade;
+import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
+import com.example.OrderMatchingService.domain.matching.PriceTimePrioritystrategy;
 import com.example.OrderMatchingService.service.OrderBookManager;
 import com.example.OrderMatchingService.service.OrderMatcher;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,11 +28,12 @@ class OrderMatchingServiceApplicationTests {
 
 	private OrderMatcher orderMatcher;
 	private OrderBookManager orderBookManager;
+	private MatchingStrategy strategy = new PriceTimePrioritystrategy();
 
 	@BeforeEach
 	public void setUp() {
 		orderBookManager = mock(OrderBookManager.class);
-		orderMatcher = new OrderMatcher("ticker", orderBookManager);
+		orderMatcher = new OrderMatcher("ticker", orderBookManager, strategy);
 	}
 
 	@Test
