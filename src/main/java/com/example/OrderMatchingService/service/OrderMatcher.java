@@ -29,6 +29,11 @@ public class OrderMatcher {
   }
 
   public List<Trade> match(Order order) {
+
+    if (!order.getTickerName().equals(ticker)) {
+      throw new IllegalArgumentException("wrong ticker name");
+    }
+
     long startTime = System.nanoTime();
 
     List<Trade> pendingTrades;
@@ -61,19 +66,16 @@ public class OrderMatcher {
       Order match = priceLevelQueue.peek();
       int tradedQty = Math.min(order.getQuantity(), match.getQuantity());
 
+      order.decreaseQuantity(tradedQty);
+      match.decreaseQuantity(tradedQty);
+
       Order buyOrder = order.isBuyOrder() ? order : match;
       Order sellOrder = order.isSellOrder() ? order : match;
 
-      buyOrder.increaseQuantity(tradedQty);
-      sellOrder.decreaseQuantity(tradedQty);
+      Trade trade = new Trade( buyOrder.getUserId(), sellOrder.getUserId(), bestPrice, tradedQty,
+              System.currentTimeMillis());
 
-      Trade trade = new Trade(
-        buyOrder.getUserId(),
-        sellOrder.getUserId(),
-        bestPrice, tradedQty, System.currentTimeMillis()
-      );
-
-      processMatch(trade);
+      process(trade);
       trades.add(trade);
 
       if (match.getQuantity() == 0) {
@@ -98,7 +100,7 @@ public class OrderMatcher {
   }
 
   //send event for trade execution service
-  private void processMatch(Trade trade) {
+  private void process(Trade trade) {
     totalMatchedVolume.addAndGet(trade.getQuantity());
     totalTradeCount.incrementAndGet();
   }
