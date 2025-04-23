@@ -53,7 +53,6 @@ public class OrderMatcher {
 
     }
 
-    //send event for trade execution service
     private void process(Trade trade) {
         totalMatchedVolume.addAndGet(trade.getQuantity());
         totalTradeCount.incrementAndGet();

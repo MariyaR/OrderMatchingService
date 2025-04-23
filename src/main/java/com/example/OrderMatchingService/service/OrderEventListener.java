@@ -1,20 +1,22 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
+import com.example.OrderMatchingService.dto.OrderDto;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderEventListener {
 
-  private final OrderMatcher orderMatcher;
+  private final OrderPlacementService orderPlacementService;
 
-  public OrderEventListener(OrderMatcher orderMatcher) {this.orderMatcher = orderMatcher;}
+  public OrderEventListener(OrderPlacementService orderPlacementService) {
+    this.orderPlacementService = orderPlacementService;
+  }
 
   @KafkaListener(topics = "order-event", groupId = "my-group")
-  public void listen(Order order) {
-    orderMatcher.match(order);
-    System.out.println("Received message: ");
+  public void handleIncomingOrder(OrderDto orderDto) {
+    orderPlacementService.placeOrder(orderDto);
   }
 
 
