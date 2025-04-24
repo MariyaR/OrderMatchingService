@@ -8,19 +8,21 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "trade_order")
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @Builder
 @AllArgsConstructor
 public class Order {
+
   @Id
   @GeneratedValue
   @Column(name = "order_id")
   private UUID orderID;
 
   @Column(name = "user_id", nullable = false)
+  @NonNull
   private UUID userId;
 
   @Enumerated(EnumType.STRING)
@@ -28,6 +30,7 @@ public class Order {
   private OperationType operationType;
 
   @Column(name = "ticker_name", nullable = false)
+  @NonNull
   private String tickerName;
 
   @Column(name = "quantity", nullable = false)
@@ -39,7 +42,12 @@ public class Order {
   private Long price;
 
   @Column(name = "created_at", nullable = false)
+  @NonNull
   private Date createdAt;
+
+  @Column(name = "order_status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private OrderStatus status;
 
   public boolean isSellOrder() {
     return operationType == OperationType.SELL;
@@ -47,11 +55,6 @@ public class Order {
   public boolean isBuyOrder() {
     return operationType == OperationType.BUY;
   }
-
-  public void increaseQuantity(int delta) {
-    quantity += delta;
-  }
-
   public void decreaseQuantity(int delta) {
     quantity -= delta;
   }

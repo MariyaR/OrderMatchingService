@@ -1,6 +1,7 @@
 package com.example.OrderMatchingService.controller;
 
 
+import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.dto.OrderDto;
 import com.example.OrderMatchingService.service.OrderPlacementService;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,8 @@ public class OrderPlaceController {
   }
 
   @PostMapping
-  public void placeOrder(@PathVariable OrderDto orderDto) {
-    orderPlacementService.placeOrder(orderDto);
+  public void placeOrder(@PathVariable Order order) {
+    orderPlacementService.placeOrder(order);
   }
 
 }

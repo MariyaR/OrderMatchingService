@@ -2,6 +2,7 @@ package com.example.OrderMatchingService.service;
 
 
 import com.example.OrderMatchingService.domain.Order;
+import com.example.OrderMatchingService.domain.OrderStatus;
 import com.example.OrderMatchingService.dto.OrderDto;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ public class OrderMapper {
       .quantity(dto.getQuantity())
       .price(dto.getPrice())
       .createdAt(dto.getCreatedAt())
+      .status(OrderStatus.CREATED)
       .build();
   }
 

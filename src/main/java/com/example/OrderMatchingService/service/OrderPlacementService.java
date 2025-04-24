@@ -5,6 +5,7 @@ import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.Trade;
 import com.example.OrderMatchingService.dto.OrderDto;
 import com.example.OrderMatchingService.repository.OrderRepository;
+import com.example.OrderMatchingService.repository.TradeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,19 +17,14 @@ public class OrderPlacementService {
 
   private final OrderRepository orderRepository;
   private final OrderMapper orderMapper;
-  private final OrderProducerService orderProducerService;
 
-  private final OrderMatcherFactory orderMatcherFactory;
-
-  public OrderPlacementService(OrderRepository orderRepository, OrderMapper orderMapper, OrderProducerService orderProducerService, OrderMatcherFactory orderMatcherFactory) {
+  public OrderPlacementService(OrderRepository orderRepository, OrderMapper orderMapper) {
     this.orderRepository = orderRepository;
     this.orderMapper = orderMapper;
-    this.orderProducerService = orderProducerService;
-    this.orderMatcherFactory = orderMatcherFactory;
   }
 
-  public boolean isValid(OrderDto orderDto) {
-    return orderDto.getQuantity() > 0 && orderDto.getPrice().doubleValue() > 0;
+  public boolean isValid(Order order) {
+    return order.getQuantity() > 0 && order.getPrice().doubleValue() > 0;
   }
 
   public Order save(Order order) {
@@ -43,15 +39,10 @@ public class OrderPlacementService {
     orderRepository.deleteById(orderId);
   }
 
-  public void placeOrder(OrderDto orderDto) {
-    if (!isValid(orderDto)) {
+  public void placeOrder(Order order) {
+    if (!isValid(order)) {
       throw new IllegalArgumentException("Invalid order");
     }
-
-    var order = orderMapper.mapToOrer(orderDto);
     save(order);
-    OrderMatcher matcher = orderMatcherFactory.get(order.getTickerName());
-    List<Trade> trades = matcher.match(order);
-    trades.forEach(orderProducerService::sendTrade);
   }
 }

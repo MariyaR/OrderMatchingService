@@ -3,13 +3,13 @@ package com.example.OrderMatchingService.domain.events;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class OrderPlacedEvent implements DomainEvent {
+public class OrderMatchedEvent implements DomainEvent {
     private final UUID orderId;
     private final String ticker;
     private final int quantity;
     private final long price;
     private final LocalDateTime occurredAt;
-    public OrderPlacedEvent(UUID orderId, String ticker, int quantity, long price) {
+    public OrderMatchedEvent(UUID orderId, String ticker, int quantity, long price) {
         this.orderId = orderId;
         this.ticker = ticker;
         this.quantity = quantity;

@@ -1,12 +1,11 @@
 package com.example.OrderMatchingService.domain.matching;
 
 import com.example.OrderMatchingService.domain.Order;
+import com.example.OrderMatchingService.domain.OrderStatus;
 import com.example.OrderMatchingService.domain.Trade;
+import com.example.OrderMatchingService.domain.TradeStatus;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class PriceTimePrioritystrategy implements MatchingStrategy{
@@ -15,7 +14,6 @@ public class PriceTimePrioritystrategy implements MatchingStrategy{
         List<Trade> trades = new ArrayList<>();
 
         while (canMatch(order, matchBook)) {
-
             Long bestPrice = matchBook.firstKey();
             Queue<Order> priceLevelQueue = matchBook.get(bestPrice);
             Order match = priceLevelQueue.peek();
@@ -27,15 +25,17 @@ public class PriceTimePrioritystrategy implements MatchingStrategy{
             Order buyOrder = order.isBuyOrder() ? order : match;
             Order sellOrder = order.isSellOrder() ? order : match;
 
-            Trade trade = new Trade( buyOrder.getUserId(), sellOrder.getUserId(), bestPrice, tradedQty,
-                    System.currentTimeMillis());
+            Trade trade = new Trade(UUID.randomUUID(), buyOrder.getUserId(), sellOrder.getUserId(), order.getTickerName(),
+                    bestPrice, tradedQty, new Date(), TradeStatus.PENDING);
 
-           // process(trade);
             trades.add(trade);
 
             if (match.getQuantity() == 0) {
+                match.setStatus(OrderStatus.FULLY_MATCHED);
                 priceLevelQueue.poll();
                 if (priceLevelQueue.isEmpty()) matchBook.remove(bestPrice);
+            } else {
+                match.setStatus(OrderStatus.PARTIALLY_MATCHED);
             }
         }
 

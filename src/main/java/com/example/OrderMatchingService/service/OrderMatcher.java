@@ -1,6 +1,7 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
+import com.example.OrderMatchingService.domain.OrderStatus;
 import com.example.OrderMatchingService.domain.Trade;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 
@@ -35,6 +36,8 @@ public class OrderMatcher {
         }
 
         long startTime = System.nanoTime();
+
+        order.setStatus(OrderStatus.PENDING);
         List<Trade> pendingTrades;
         ConcurrentSkipListMap<Long, Queue<Order>> matchBook = order.isBuyOrder() ? sellBook : buyBook;
         pendingTrades = matchingStrategy.match(order, matchBook);
@@ -43,6 +46,11 @@ public class OrderMatcher {
         if (order.getQuantity() > 0) {
             ConcurrentSkipListMap<Long, Queue<Order>> targetBook = order.isBuyOrder() ? buyBook : sellBook;
             targetBook.computeIfAbsent(order.getPrice(), k -> new LinkedList<>()).add(order);
+            if (!pendingTrades.isEmpty()) {
+                order.setStatus(OrderStatus.PARTIALLY_MATCHED);
+            }
+        } else if (!pendingTrades.isEmpty()) {
+            order.setStatus(OrderStatus.FULLY_MATCHED);
         }
 
         long endTime = System.nanoTime(); // End timer
