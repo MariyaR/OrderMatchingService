@@ -36,7 +36,7 @@ public class OrderProcessingService {
     public void process(OrderDto orderDto) {
         Order newOrder = orderMapper.mapToOrer(orderDto);
         orderPlacementService.placeOrder(newOrder);
-        orderEventPublisher.publishOrderPlaced(newOrder);
+        //orderEventPublisher.publishOrderPlaced(newOrder);
 
         List<Trade> trades = orderMatchingService.match(newOrder);
         for (Trade trade : trades) {

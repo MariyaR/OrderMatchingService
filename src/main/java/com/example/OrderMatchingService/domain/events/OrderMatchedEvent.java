@@ -1,24 +1,30 @@
 package com.example.OrderMatchingService.domain.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
+@Getter
+@Setter
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
 
 public class OrderMatchedEvent implements DomainEvent {
-    private final UUID orderId;
+
+    private UUID matchId;
+    private UUID buyOrderId;
+    private UUID sellOrderId;
     private final String ticker;
     private final int quantity;
     private final long price;
-    private final LocalDateTime occurredAt;
-    public OrderMatchedEvent(UUID orderId, String ticker, int quantity, long price) {
-        this.orderId = orderId;
-        this.ticker = ticker;
-        this.quantity = quantity;
-        this.price = price;
-        this.occurredAt = LocalDateTime.now(); // Timestamp when event is created
-    }
+    private final Date occurredAt;
 
     @Override
-    public LocalDateTime occurredAt() {
+    public Date occurredAt() {
         return occurredAt;
     }
 

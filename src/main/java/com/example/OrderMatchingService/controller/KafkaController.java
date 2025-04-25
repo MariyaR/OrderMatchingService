@@ -17,7 +17,7 @@ public class KafkaController {
 
   @PostMapping("/send")
   public String sendMessage(@RequestBody MessageDto messageDto) {
-    producerService.sendMessage(messageDto.getText());
+    //producerService.sendMessage(messageDto.getText());
     return "Message sent to Kafka topic!";
   }
 }
