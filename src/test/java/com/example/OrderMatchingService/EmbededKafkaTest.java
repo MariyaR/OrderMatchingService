@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DirtiesContext
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
+@EmbeddedKafka(partitions = 1)
 public class EmbededKafkaTest {
 
     @Autowired
@@ -32,8 +32,8 @@ public class EmbededKafkaTest {
             throws Exception {
         OrderMatchedEvent event = new OrderMatchedEvent(
                 UUID.randomUUID(),
-                UUID.randomUUID(),  // Buy order ID
-                UUID.randomUUID(),  // Sell order ID
+                UUID.randomUUID(),
+                UUID.randomUUID(),
                 "ticker",
                 80,
                 150L,
@@ -41,7 +41,7 @@ public class EmbededKafkaTest {
         );
 
 
-        orderEventPublisher.publishOrderMathedEvent(event);
+        orderEventPublisher.publishOrderMatchedEvent(event);
 
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))

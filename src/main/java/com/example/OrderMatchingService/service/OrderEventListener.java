@@ -17,7 +17,7 @@ public class OrderEventListener {
     this.orderProcessingService = orderProcessingService;
   }
 
-  @KafkaListener(topics = "order-event", groupId = "my-group")
+  @KafkaListener(topics = "order-event")
   public void handleIncomingOrder(OrderDto orderDto) {
     orderProcessingService.process(orderDto);
   }
