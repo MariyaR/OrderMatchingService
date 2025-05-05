@@ -1,20 +1,18 @@
 package com.example.OrderMatchingService.service;
 
-import com.example.OrderMatchingService.domain.Order;
-import com.example.OrderMatchingService.domain.OrderStatus;
-import com.example.OrderMatchingService.domain.Trade;
+import com.example.OrderMatchingService.domain.*;
+import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 public class OrderMatcher {
 
     private final String ticker;
-    private final ConcurrentSkipListMap<Long, Queue<Order>> buyBook = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
-    private final ConcurrentSkipListMap<Long, Queue<Order>> sellBook = new ConcurrentSkipListMap<>();
+    private final OrderBook orderBook;
     private final MatchingStrategy matchingStrategy;
     private final AtomicLong totalMatchedVolume = new AtomicLong();
     private final AtomicLong totalTradeCount = new AtomicLong();
@@ -23,13 +21,14 @@ public class OrderMatcher {
 
     private final OrderBookManager orderBookManager;
 
-    public OrderMatcher(String ticker, OrderBookManager orderBookManager, MatchingStrategy matchingStrategy) {
+    public OrderMatcher(String ticker, OrderBookManager orderBookManager, MatchingStrategy matchingStrategy, OrderBook orderBook) {
         this.ticker = ticker;
         this.orderBookManager = orderBookManager;
         this.matchingStrategy = matchingStrategy;
+        this.orderBook = orderBook;
     }
 
-    public List<Trade> match(Order order) {
+    public List<TradeCreatedEvent> match(Order order) {
 
         if (!order.getTickerName().equals(ticker)) {
             throw new IllegalArgumentException("wrong ticker name");
@@ -38,26 +37,25 @@ public class OrderMatcher {
         long startTime = System.nanoTime();
 
         order.setStatus(OrderStatus.PENDING);
-        List<Trade> pendingTrades;
-        ConcurrentSkipListMap<Long, Queue<Order>> matchBook = order.isBuyOrder() ? sellBook : buyBook;
-        pendingTrades = matchingStrategy.match(order, matchBook);
-        pendingTrades.forEach(this::process);
+        List<TradeCreatedEvent> tradeEvents;
+        tradeEvents = matchingStrategy.match(order, orderBook);
+        tradeEvents.forEach(event -> process(TradeEventMapper.fromEvent(event)));
 
         if (order.getQuantity() > 0) {
-            ConcurrentSkipListMap<Long, Queue<Order>> targetBook = order.isBuyOrder() ? buyBook : sellBook;
-            targetBook.computeIfAbsent(order.getPrice(), k -> new LinkedList<>()).add(order);
-            if (!pendingTrades.isEmpty()) {
-                order.setStatus(OrderStatus.PARTIALLY_MATCHED);
-            }
-        } else if (!pendingTrades.isEmpty()) {
+          orderBook.addOrder(order);
+
+          if (!tradeEvents.isEmpty()) {
+            order.setStatus(OrderStatus.PARTIALLY_MATCHED);
+          }
+        } else if (!tradeEvents.isEmpty()) {
             order.setStatus(OrderStatus.FULLY_MATCHED);
         }
 
-        long endTime = System.nanoTime(); // End timer
+        long endTime = System.nanoTime(); // End time
         long latencyMicros = (endTime - startTime) / 1000; // Convert to microseconds
         recordLatency(latencyMicros);
 
-        return pendingTrades;
+        return tradeEvents;
 
     }
 

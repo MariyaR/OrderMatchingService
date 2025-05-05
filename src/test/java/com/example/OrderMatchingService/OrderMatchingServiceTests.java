@@ -2,9 +2,11 @@ package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.*;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
-import com.example.OrderMatchingService.domain.matching.PriceTimePrioritystrategy;
+import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
+import com.example.OrderMatchingService.service.OrderBookFactory;
 import com.example.OrderMatchingService.service.OrderBookManager;
 import com.example.OrderMatchingService.service.OrderMatcher;
+import com.example.OrderMatchingService.service.TradeEventMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,23 +15,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 
 class OrderMatchingServiceTests {
 
-	@Test
-	void contextLoads() {
-	}
-
 	private OrderMatcher orderMatcher;
 	private OrderBookManager orderBookManager;
-	private MatchingStrategy strategy = new PriceTimePrioritystrategy();
+	private MatchingStrategy strategy = new PriceTimePriorityStrategy();
+  private OrderBookFactory orderBookFactory = new OrderBookFactory();
 
 	@BeforeEach
 	public void setUp() {
+    OrderBook orderBook = orderBookFactory.getOrCreate("ticker");
 		orderBookManager = mock(OrderBookManager.class);
-		orderMatcher = new OrderMatcher("ticker", orderBookManager, strategy);
+		orderMatcher = new OrderMatcher("ticker", orderBookManager, strategy, orderBook);
 	}
 
 	@Test
@@ -46,7 +47,7 @@ class OrderMatchingServiceTests {
 				"ticker", 100, 150L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		List<Trade> trades = orderMatcher.match(buyOrder);
+		List<Trade> trades = orderMatcher.match(buyOrder).stream().map(TradeEventMapper::fromEvent).toList();
 
 		//assertions
 		assertEquals(1, trades.size());
@@ -71,7 +72,7 @@ class OrderMatchingServiceTests {
 				"ticker", 50, 200L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		List<Trade> trades = orderMatcher.match(sellOrder);
+		List<Trade> trades = orderMatcher.match(sellOrder).stream().map(TradeEventMapper::fromEvent).toList();
 
 		//assertions
 		assertEquals(1, trades.size());
@@ -95,7 +96,7 @@ class OrderMatchingServiceTests {
 				"ticker", 50, 70L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		List<Trade> trades = orderMatcher.match(buyOrder);
+		List<Trade> trades = orderMatcher.match(buyOrder).stream().map(TradeEventMapper::fromEvent).toList();
 
 		//assertions
 		assertEquals(1, trades.size());
@@ -109,7 +110,7 @@ class OrderMatchingServiceTests {
 				"ticker", 50, 60L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		trades = orderMatcher.match(nextBuyOrder);
+		trades = orderMatcher.match(nextBuyOrder).stream().map(TradeEventMapper::fromEvent).toList();
 
 		//assertions
 		assertEquals(1, trades.size());
@@ -129,7 +130,7 @@ class OrderMatchingServiceTests {
 				"ticker", 50, 200L, new Date(), OrderStatus.CREATED);
 
 		// Act
-		List<Trade> trades = orderMatcher.match(buyOrder);
+		List<Trade> trades = TradeEventMapper.fromListEvents(orderMatcher.match(buyOrder));
 
 		// Assert
 		assertTrue(trades.isEmpty());
@@ -151,7 +152,7 @@ class OrderMatchingServiceTests {
 				"ticker", 30, 200L, new Date(), OrderStatus.CREATED);
 
 		// Act
-		List<Trade> trades = orderMatcher.match(buyOrder);
+		List<Trade> trades = orderMatcher.match(buyOrder).stream().map(TradeEventMapper::fromEvent).toList();
 
 		// Assert
 		assertEquals(1, trades.size());
@@ -239,7 +240,7 @@ class OrderMatchingServiceTests {
 		Order buyOrder = new Order(UUID.randomUUID(), userId, OperationType.BUY,
 				"ticker", 100, 500L, new Date(), OrderStatus.CREATED);
 
-		List<Trade> trades = orderMatcher.match(buyOrder);
+		List<Trade> trades = TradeEventMapper.fromListEvents(orderMatcher.match(buyOrder));
 		assertTrue(trades.isEmpty());
 		assertEquals(OrderStatus.PENDING, buyOrder.getStatus());
 	}

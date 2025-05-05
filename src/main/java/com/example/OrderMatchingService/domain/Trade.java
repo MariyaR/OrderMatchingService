@@ -27,6 +27,14 @@ public class Trade {
   @NonNull
   public final UUID sellerId;
 
+  @Column(name = "buy_order_id")
+  @NonNull
+  public final UUID buyOrderId;
+
+  @Column(name = "sell_order_id")
+  @NonNull
+  public final UUID sellOrderId;
+
   @Column(name = "ticker_name", nullable = false)
   @NonNull
   private String tickerName;

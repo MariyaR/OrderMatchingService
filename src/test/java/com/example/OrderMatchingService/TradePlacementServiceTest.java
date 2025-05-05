@@ -30,7 +30,7 @@ public class TradePlacementServiceTest {
     @Test
     void shouldSaveTradeInDatabase() {
         Trade trade = new Trade(
-                null, UUID.randomUUID(),UUID.randomUUID(), "ticker", 200L
+                null, UUID.randomUUID(),UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(),"ticker", 200L
                 , 100,
                 new Date(), TradeStatus.CREATED
         );

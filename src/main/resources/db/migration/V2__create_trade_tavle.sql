@@ -5,6 +5,8 @@ CREATE TABLE "orders"
     trade_id UUID PRIMARY KEY,
     buyer_id UUID NOT NULL,
     seller_id UUID NOT NULL,
+    buy_order_id UUID NOT NULL,
+    sell_order_id UUID NOT NULL,
     ticker_name VARCHAR(5) NOT NULL,
     quantity INT NOT NULL,
     price BIGINT NOT NULL,
