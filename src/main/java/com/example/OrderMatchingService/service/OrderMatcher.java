@@ -19,11 +19,9 @@ public class OrderMatcher {
     private final AtomicLong totalLatencyMicros = new AtomicLong();
     private final AtomicLong matchCount = new AtomicLong();
 
-    private final OrderBookManager orderBookManager;
 
-    public OrderMatcher(String ticker, OrderBookManager orderBookManager, MatchingStrategy matchingStrategy, OrderBook orderBook) {
+    public OrderMatcher(String ticker, MatchingStrategy matchingStrategy, OrderBook orderBook) {
         this.ticker = ticker;
-        this.orderBookManager = orderBookManager;
         this.matchingStrategy = matchingStrategy;
         this.orderBook = orderBook;
     }
@@ -49,6 +47,7 @@ public class OrderMatcher {
           }
         } else if (!tradeEvents.isEmpty()) {
             order.setStatus(OrderStatus.FULLY_MATCHED);
+            orderBook.reserveOrder(order);
         }
 
         long endTime = System.nanoTime(); // End time

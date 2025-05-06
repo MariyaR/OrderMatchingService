@@ -24,6 +24,6 @@ public class OrderMatcherFactory {
   public OrderMatcher get(String ticker) {
     OrderBook book = orderBookFactory.getOrCreate(ticker);
     return matchers.computeIfAbsent(ticker, t ->
-         new OrderMatcher(t, orderBookManager, matchingStrategy, book));
+         new OrderMatcher(t, matchingStrategy, book));
   }
 }

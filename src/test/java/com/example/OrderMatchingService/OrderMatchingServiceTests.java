@@ -22,15 +22,13 @@ import static org.mockito.Mockito.mock;
 class OrderMatchingServiceTests {
 
 	private OrderMatcher orderMatcher;
-	private OrderBookManager orderBookManager;
 	private MatchingStrategy strategy = new PriceTimePriorityStrategy();
   private OrderBookFactory orderBookFactory = new OrderBookFactory();
 
 	@BeforeEach
 	public void setUp() {
     OrderBook orderBook = orderBookFactory.getOrCreate("ticker");
-		orderBookManager = mock(OrderBookManager.class);
-		orderMatcher = new OrderMatcher("ticker", orderBookManager, strategy, orderBook);
+		orderMatcher = new OrderMatcher("ticker", strategy, orderBook);
 	}
 
 	@Test
