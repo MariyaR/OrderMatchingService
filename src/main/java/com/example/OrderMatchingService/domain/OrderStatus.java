@@ -1,5 +1,5 @@
 package com.example.OrderMatchingService.domain;
 
 public enum OrderStatus {
-    CREATED, PENDING, PARTIALLY_MATCHED, FULLY_MATCHED, CANCELLED, EXPIRED, REJECTED
+    CREATED, READY_FOR_MATCHING, RESERVED, COMPLETED, CANCELLED
 }

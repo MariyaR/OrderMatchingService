@@ -34,19 +34,15 @@ public class OrderMatcher {
 
         long startTime = System.nanoTime();
 
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.READY_FOR_MATCHING);
         List<TradeCreatedEvent> tradeEvents;
         tradeEvents = matchingStrategy.match(order, orderBook);
         tradeEvents.forEach(event -> process(TradeEventMapper.fromEvent(event)));
 
         if (order.getQuantity() > 0) {
           orderBook.addOrder(order);
-
-          if (!tradeEvents.isEmpty()) {
-            order.setStatus(OrderStatus.PARTIALLY_MATCHED);
-          }
         } else if (!tradeEvents.isEmpty()) {
-            order.setStatus(OrderStatus.FULLY_MATCHED);
+            order.setStatus(OrderStatus.RESERVED);
             orderBook.reserveOrder(order);
         }
 

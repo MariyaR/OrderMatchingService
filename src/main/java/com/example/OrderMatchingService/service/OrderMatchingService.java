@@ -22,7 +22,6 @@ public class OrderMatchingService {
   }
 
   List<TradeCreatedEvent> match (Order order) {
-    order.setStatus(OrderStatus.PENDING);
     OrderMatcher matcher = orderMatcherFactory.get(order.getTickerName());
     return matcher.match(order);
   }

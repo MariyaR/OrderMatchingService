@@ -42,10 +42,13 @@ public class OrderBook {
         }
       });
 
+    order.setStatus(OrderStatus.RESERVED);
     reservedOrders.computeIfAbsent(order.getOrderID(), k -> order);
   }
 
   public void addOrder(Order order) {
+    order.setStatus(OrderStatus.READY_FOR_MATCHING);
+
     ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> targetBook = order.isBuyOrder() ? buyBook : sellBook;
 
     ConcurrentSkipListMap<Date, List<Order>> timeMap =

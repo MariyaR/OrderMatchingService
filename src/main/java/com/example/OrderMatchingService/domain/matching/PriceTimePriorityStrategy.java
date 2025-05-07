@@ -15,7 +15,7 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
         while (canMatch(order, orderBook)) {
             Long bestPrice = orderBook.getBestPrice(order);
             ConcurrentSkipListMap<Date, List<Order>> priceLevelQueue = orderBook.getPriceLevel(order);
-            Order match = priceLevelQueue.firstEntry().getValue().getFirst();
+            Order match = priceLevelQueue.firstEntry().getValue().get(0);
             int tradedQty = Math.min(order.getQuantity(), match.getQuantity());
 
             order.decreaseQuantity(tradedQty);
@@ -31,11 +31,9 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
             tradeEvents.add(new TradeCreatedEvent(trade, buyOrder, sellOrder));
 
             if (match.getQuantity() == 0) {
-                match.setStatus(OrderStatus.FULLY_MATCHED);
+                match.setStatus(OrderStatus.RESERVED);
                 orderBook.reserveOrder(match);
                 if (priceLevelQueue.isEmpty()) orderBook.getBook(order).remove(bestPrice);
-            } else {
-                match.setStatus(OrderStatus.PARTIALLY_MATCHED);
             }
         }
 

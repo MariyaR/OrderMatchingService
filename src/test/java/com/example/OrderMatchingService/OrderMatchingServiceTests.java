@@ -1,10 +1,10 @@
 package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.*;
+import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
 import com.example.OrderMatchingService.service.OrderBookFactory;
-import com.example.OrderMatchingService.service.OrderBookManager;
 import com.example.OrderMatchingService.service.OrderMatcher;
 import com.example.OrderMatchingService.service.TradeEventMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.mockito.Mockito.mock;
 
 class OrderMatchingServiceTests {
 
@@ -45,16 +42,26 @@ class OrderMatchingServiceTests {
 				"ticker", 100, 150L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		List<Trade> trades = orderMatcher.match(buyOrder).stream().map(TradeEventMapper::fromEvent).toList();
+		List<TradeCreatedEvent> tradesEvents = orderMatcher.match(buyOrder);
 
 		//assertions
-		assertEquals(1, trades.size());
-		Trade trade = trades.get(0);
-		assertEquals(TradeStatus.PENDING, trade.getStatus());
+		assertEquals(1, tradesEvents.size());
+		TradeCreatedEvent tradeEvent = tradesEvents.get(0);
+		assertEquals(buyUserId, tradeEvent.getBuyUserId());
+		assertEquals(sellUserId, tradeEvent.getSellUserId());
+		assertEquals(150, tradeEvent.getPrice());
+		assertEquals(100, tradeEvent.getQuantity());
+
+		Trade trade = TradeEventMapper.fromEvent(tradeEvent);
 		assertEquals(buyUserId, trade.getBuyerId());
 		assertEquals(sellUserId, trade.getSellerId());
 		assertEquals(150, trade.getPrice());
-		assertEquals(100, trade.getQuantity());
+		assertEquals(100, tradeEvent.getQuantity());
+
+		OrderBook orderBook = orderBookFactory.getOrCreate("ticker");
+		assertNotNull(orderBook.getReservedOrder(sellOrder.getOrderID()));
+		assertNotNull(orderBook.getReservedOrder(buyOrder.getOrderID()));
+
 	}
 
 	@Test
@@ -69,15 +76,27 @@ class OrderMatchingServiceTests {
 		Order sellOrder = new Order(UUID.randomUUID(), sellUserId, OperationType.SELL,
 				"ticker", 50, 200L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
+
 		//action
-		List<Trade> trades = orderMatcher.match(sellOrder).stream().map(TradeEventMapper::fromEvent).toList();
+		List<TradeCreatedEvent> tradesEvents = orderMatcher.match(sellOrder);
 
 		//assertions
-		assertEquals(1, trades.size());
-		Trade trade = trades.get(0);
-		assertEquals(TradeStatus.PENDING, trade.getStatus());
-		assertEquals(50, trade.getQuantity());
+		assertEquals(1, tradesEvents.size());
+		TradeCreatedEvent tradeEvent = tradesEvents.get(0);
+		assertEquals(buyUserId, tradeEvent.getBuyUserId());
+		assertEquals(sellUserId, tradeEvent.getSellUserId());
+		assertEquals(200, tradeEvent.getPrice());
+		assertEquals(50, tradeEvent.getQuantity());
+
+		Trade trade = TradeEventMapper.fromEvent(tradeEvent);
+		assertEquals(buyUserId, trade.getBuyerId());
+		assertEquals(sellUserId, trade.getSellerId());
 		assertEquals(200, trade.getPrice());
+		assertEquals(50, tradeEvent.getQuantity());
+
+		OrderBook orderBook = orderBookFactory.getOrCreate("ticker");
+		assertNotNull(orderBook.getReservedOrder(sellOrder.getOrderID()));
+		assertNotNull(orderBook.getReservedOrder(buyOrder.getOrderID()));
 	}
 
 	@Test
@@ -94,26 +113,36 @@ class OrderMatchingServiceTests {
 				"ticker", 50, 70L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		List<Trade> trades = orderMatcher.match(buyOrder).stream().map(TradeEventMapper::fromEvent).toList();
+		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(buyOrder);
 
 		//assertions
-		assertEquals(1, trades.size());
-		assertEquals(50, trades.get(0).getQuantity());
-		assertEquals(TradeStatus.PENDING, trades.get(0).getStatus());
-		assertEquals(OrderStatus.PARTIALLY_MATCHED, sellOrder.getStatus());
-		assertEquals(OrderStatus.FULLY_MATCHED, buyOrder.getStatus());
+		assertEquals(1, tradeEvents.size());
+		assertEquals(50, tradeEvents.get(0).getQuantity());
+
+		OrderBook orderBook = orderBookFactory.getOrCreate("ticker");
+		assertNull(orderBook.getReservedOrder(sellOrder.getOrderID()));
+		assertNotNull(orderBook.getReservedOrder(buyOrder.getOrderID()));
+
 
 		UUID nextBuyUserId = UUID.randomUUID();
 		Order nextBuyOrder = new Order(UUID.randomUUID(), nextBuyUserId, OperationType.BUY,
 				"ticker", 50, 60L, new Date(125, Calendar.JANUARY,1), OrderStatus.CREATED);
 
 		//action
-		trades = orderMatcher.match(nextBuyOrder).stream().map(TradeEventMapper::fromEvent).toList();
+		tradeEvents = orderMatcher.match(nextBuyOrder);
 
 		//assertions
-		assertEquals(1, trades.size());
-		assertEquals(50, trades.get(0).getQuantity());
-		assertEquals(TradeStatus.PENDING, trades.get(0).getStatus());
+		assertEquals(1, tradeEvents.size());
+		assertEquals(50, tradeEvents.get(0).getQuantity());
+
+		Trade trade = TradeEventMapper.fromEvent(tradeEvents.get(0));
+		assertEquals(nextBuyUserId, trade.getBuyerId());
+		assertEquals(sellUserId, trade.getSellerId());
+		assertEquals(40, trade.getPrice());
+		assertEquals(50, trade.getQuantity());
+
+		assertNotNull(orderBook.getReservedOrder(sellOrder.getOrderID()));
+		assertNotNull(orderBook.getReservedOrder(buyOrder.getOrderID()));
 	}
 
 	@Test
@@ -128,10 +157,10 @@ class OrderMatchingServiceTests {
 				"ticker", 50, 200L, new Date(), OrderStatus.CREATED);
 
 		// Act
-		List<Trade> trades = TradeEventMapper.fromListEvents(orderMatcher.match(buyOrder));
+		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(buyOrder);
 
 		// Assert
-		assertTrue(trades.isEmpty());
+		assertTrue(tradeEvents.isEmpty());
 	}
 
 	@Test
@@ -172,7 +201,7 @@ class OrderMatchingServiceTests {
 	}
 
 	@Test
-	void testBuyOrderStatusFullyMatched() {
+	void testOrderStatusFullyMatched() {
 		Order sellOrder = new Order(UUID.randomUUID(), UUID.randomUUID(), OperationType.SELL,
 				"ticker", 100, 150L, new Date(), OrderStatus.CREATED);
 		orderMatcher.match(sellOrder);
@@ -181,29 +210,17 @@ class OrderMatchingServiceTests {
 				"ticker", 100, 150L, new Date(), OrderStatus.CREATED);
 		orderMatcher.match(buyOrder);
 
-		assertEquals(OrderStatus.FULLY_MATCHED, buyOrder.getStatus());
+		assertEquals(OrderStatus.RESERVED, buyOrder.getStatus());
+		assertEquals(OrderStatus.RESERVED, sellOrder.getStatus());
 	}
 
 	@Test
-	void testSellOrderStatusFullyMatched() {
+	void testOrderStatusReady() {
 		Order sellOrder = new Order(UUID.randomUUID(), UUID.randomUUID(), OperationType.SELL,
 				"ticker", 100, 150L, new Date(), OrderStatus.CREATED);
 		orderMatcher.match(sellOrder);
 
-		Order buyOrder = new Order(UUID.randomUUID(), UUID.randomUUID(), OperationType.BUY,
-				"ticker", 100, 150L, new Date(), OrderStatus.CREATED);
-		orderMatcher.match(buyOrder);
-
-		assertEquals(OrderStatus.FULLY_MATCHED, sellOrder.getStatus());
-	}
-
-	@Test
-	void testOrderStatusPending() {
-		Order sellOrder = new Order(UUID.randomUUID(), UUID.randomUUID(), OperationType.SELL,
-				"ticker", 100, 150L, new Date(), OrderStatus.CREATED);
-		orderMatcher.match(sellOrder);
-
-		assertEquals(OrderStatus.PENDING, sellOrder.getStatus());
+		assertEquals(OrderStatus.READY_FOR_MATCHING, sellOrder.getStatus());
 	}
 
 	@Test
@@ -216,7 +233,7 @@ class OrderMatchingServiceTests {
 				"ticker", 100, 150L, new Date(), OrderStatus.CREATED);
 		orderMatcher.match(buyOrder);
 
-		assertEquals(OrderStatus.PARTIALLY_MATCHED, buyOrder.getStatus());
+		assertEquals(OrderStatus.READY_FOR_MATCHING, buyOrder.getStatus());
 	}
 
 	@Test
@@ -229,7 +246,7 @@ class OrderMatchingServiceTests {
 				"ticker", 80, 150L, new Date(), OrderStatus.CREATED);
 		orderMatcher.match(buyOrder);
 
-		assertEquals(OrderStatus.PARTIALLY_MATCHED, sellOrder.getStatus());
+		assertEquals(OrderStatus.READY_FOR_MATCHING, sellOrder.getStatus());
 	}
 
 	@Test
@@ -240,7 +257,7 @@ class OrderMatchingServiceTests {
 
 		List<Trade> trades = TradeEventMapper.fromListEvents(orderMatcher.match(buyOrder));
 		assertTrue(trades.isEmpty());
-		assertEquals(OrderStatus.PENDING, buyOrder.getStatus());
+		assertEquals(OrderStatus.READY_FOR_MATCHING, buyOrder.getStatus());
 	}
 
 	@Test
