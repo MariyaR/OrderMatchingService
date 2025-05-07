@@ -5,7 +5,6 @@ import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -34,7 +33,7 @@ public class OrderMatcher {
 
         long startTime = System.nanoTime();
 
-        order.setStatus(OrderStatus.READY_FOR_MATCHING);
+        order.setStatus(OrderStatus.ACTIVE);
         List<TradeCreatedEvent> tradeEvents;
         tradeEvents = matchingStrategy.match(order, orderBook);
         tradeEvents.forEach(event -> process(TradeEventMapper.fromEvent(event)));

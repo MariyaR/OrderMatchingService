@@ -5,6 +5,7 @@ import com.example.OrderMatchingService.domain.OrderBook;
 import com.example.OrderMatchingService.domain.OrderStatus;
 import com.example.OrderMatchingService.domain.Trade;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
+import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -19,14 +20,16 @@ public class OrderRecoveryService {
 
   private static final Set<OrderStatus> ROLLBACK_ELIGIBLE_STATUSES = EnumSet.of(
           OrderStatus.RESERVED,
-          OrderStatus.READY_FOR_MATCHING
+          OrderStatus.ACTIVE
   );
 
   public OrderRecoveryService(OrderBookFactory orderBookFactory) {
     this.orderBookFactory = orderBookFactory;
   }
 
-  public void rollback(TradeCreatedEvent event) {
+  public void rollback(TradeExecutedEvent event) {
+    checkValid(event);
+
     OrderBook orderBook = orderBookFactory.getOrCreate(event.getTickerName());
 
     UUID buyId = event.getBuyOrderId();
@@ -64,8 +67,9 @@ public class OrderRecoveryService {
     Order sellOrder = sellOrderOpt.orElseThrow(() ->
             new IllegalStateException("Sell order not found for rollback: " + sellId));
 
-    buyOrderOpt.ifPresent(order -> rollBack(order, trade, orderBook));
-    sellOrderOpt.ifPresent(order -> rollBack(order, trade, orderBook));
+    rollBack(buyOrder, trade, orderBook);
+    rollBack(sellOrder, trade, orderBook);
+    event.setRollbackApplied(true);
   }
 
   public void finalize(Order order) {
@@ -85,7 +89,29 @@ public class OrderRecoveryService {
     }
 
     order.setQuantity(order.getQuantity() + trade.getQuantity());
-    order.setStatus(OrderStatus.READY_FOR_MATCHING);
+    order.setStatus(OrderStatus.ACTIVE);
     orderBook.addOrder(order);
+  }
+
+  private void checkValid(TradeExecutedEvent event) {
+    // Check if the event is null
+    if (event == null) {
+      throw new IllegalArgumentException("The event is null. A valid TradeExecutedEvent must be provided.");
+    }
+
+    // Check if the buyOrderId is null
+    if (event.getBuyOrderId() == null) {
+      throw new IllegalArgumentException("The event has a null buyOrderId. A valid buyOrderId is required.");
+    }
+
+    // Check if the sellOrderId is null
+    if (event.getSellOrderId() == null) {
+      throw new IllegalArgumentException("The event has a null sellOrderId. A valid sellOrderId is required.");
+    }
+
+    // Check if rollback has already been applied to this event
+    if (event.isRollbackApplied()) {
+      throw new IllegalArgumentException("Rollback has already been applied to this event. Reapplying rollback is not allowed.");
+    }
   }
 }

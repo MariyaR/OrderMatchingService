@@ -47,7 +47,7 @@ public class OrderBook {
   }
 
   public void addOrder(Order order) {
-    order.setStatus(OrderStatus.READY_FOR_MATCHING);
+    order.setStatus(OrderStatus.ACTIVE);
 
     ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> targetBook = order.isBuyOrder() ? buyBook : sellBook;
 
