@@ -3,6 +3,8 @@ package com.example.OrderMatchingService.domain.matching;
 import com.example.OrderMatchingService.domain.*;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -13,10 +15,10 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
         List<TradeCreatedEvent> tradeEvents = new ArrayList<>();
 
         while (canMatch(order, orderBook)) {
-            Long bestPrice = orderBook.getBestPrice(order);
-            ConcurrentSkipListMap<Date, List<Order>> priceLevelQueue = orderBook.getPriceLevel(order);
+            BigDecimal bestPrice = orderBook.getBestPrice(order);
+            ConcurrentSkipListMap<LocalDateTime, List<Order>> priceLevelQueue = orderBook.getPriceLevel(order);
             Order match = priceLevelQueue.firstEntry().getValue().get(0);
-            int tradedQty = Math.min(order.getQuantity(), match.getQuantity());
+            Long tradedQty = Math.min(order.getQuantity(), match.getQuantity());
 
             order.decreaseQuantity(tradedQty);
             match.decreaseQuantity(tradedQty);
@@ -25,7 +27,7 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
             Order sellOrder = order.isSellOrder() ? order : match;
 
             Trade trade = new Trade(UUID.randomUUID(), buyOrder.getUserId(), sellOrder.getUserId(), buyOrder.getOrderID(),
-              sellOrder.getOrderID(), order.getTickerName(), bestPrice, tradedQty, new Date(), TradeStatus.PENDING);
+              sellOrder.getOrderID(), order.getTickerName(), bestPrice, tradedQty, LocalDateTime.now(), TradeStatus.PENDING);
 
 
             tradeEvents.add(new TradeCreatedEvent(trade, buyOrder, sellOrder));
@@ -48,10 +50,10 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
             return false;
         }
 
-        Long bestPrice = fifoOrderBook.getBestPrice(order);
+        BigDecimal bestPrice = fifoOrderBook.getBestPrice(order);
 
-        boolean isBuyOrderTooLow = order.isBuyOrder() && bestPrice > order.getPrice();
-        boolean isSellOrderTooHigh = order.isSellOrder() && bestPrice < order.getPrice();
+        boolean isBuyOrderTooLow = order.isBuyOrder() && bestPrice.compareTo(order.getPrice()) > 0;
+        boolean isSellOrderTooHigh = order.isSellOrder() && bestPrice.compareTo(order.getPrice()) < 0;
 
         return !(isBuyOrderTooLow || isSellOrderTooHigh);
     }

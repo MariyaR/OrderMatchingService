@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,15 +37,15 @@ public class Order {
 
   @Column(name = "quantity", nullable = false)
   @NonNull
-  private Integer quantity;
+  private Long quantity;
 
   @Column(name = "price", nullable = false)
   @NonNull
-  private Long price;
+  private BigDecimal price;
 
   @Column(name = "created_at", nullable = false)
   @NonNull
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   @Column(name = "order_status", nullable = false)
   @Enumerated(EnumType.STRING)
@@ -55,7 +57,7 @@ public class Order {
   public boolean isBuyOrder() {
     return operationType == OperationType.BUY;
   }
-  public void decreaseQuantity(int delta) {
+  public void decreaseQuantity(Long delta) {
     quantity -= delta;
   }
 }

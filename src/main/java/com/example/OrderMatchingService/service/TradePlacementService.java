@@ -3,6 +3,7 @@ import com.example.OrderMatchingService.domain.Trade;
 import com.example.OrderMatchingService.repository.TradeRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 @Service
@@ -15,7 +16,7 @@ public class TradePlacementService {
     }
 
     public boolean isValid(Trade trade) {
-        return trade.getQuantity() > 0 && trade.getPrice() > 0;
+        return trade.getQuantity() > 0 && trade.getPrice().compareTo(BigDecimal.ZERO) > 0;
     }
 
     public Trade save(Trade trade) {

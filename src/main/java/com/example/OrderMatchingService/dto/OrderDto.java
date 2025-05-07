@@ -5,7 +5,8 @@ import com.example.OrderMatchingService.domain.OperationType;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -14,7 +15,7 @@ public class OrderDto {
   private UUID userId;
   private OperationType operationType;
   private String tickerName;
-  private int quantity;
-  private Long price;
-  private Date createdAt;
+  private Long quantity;
+  private BigDecimal price;
+  private LocalDateTime createdAt;
 }

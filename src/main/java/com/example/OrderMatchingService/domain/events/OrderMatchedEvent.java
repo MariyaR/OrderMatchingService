@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 @Getter
@@ -20,10 +21,10 @@ public class OrderMatchedEvent implements DomainEvent {
     private final String ticker;
     private final int quantity;
     private final long price;
-    private final Date createdAt;
+    private final LocalDateTime createdAt;
 
     @Override
-    public Date createdAt() {
+    public LocalDateTime createdAt() {
         return createdAt;
     }
 

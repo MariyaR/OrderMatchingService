@@ -1,5 +1,7 @@
 package com.example.OrderMatchingService.domain;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -7,25 +9,25 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class OrderBook {
 
-  private final ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> buyBook = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
-  private final ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> sellBook = new ConcurrentSkipListMap<>();
+  private final ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> buyBook = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
+  private final ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> sellBook = new ConcurrentSkipListMap<>();
   private final Map <UUID, Order> reservedOrders = new ConcurrentHashMap<>();
 
-  public ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> getBook(Order order) {
+  public ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> getBook(Order order) {
     return order.isBuyOrder() ? sellBook : buyBook;
   }
 
-  public Long getBestPrice (Order order) {
+  public BigDecimal getBestPrice (Order order) {
     return order.isBuyOrder() ? sellBook.firstKey() : buyBook.firstKey();
   }
 
-  public ConcurrentSkipListMap<Date, List<Order>> getPriceLevel(Order order) {
-    Long bestPrice = getBestPrice(order);
+  public ConcurrentSkipListMap<LocalDateTime, List<Order>> getPriceLevel(Order order) {
+    BigDecimal bestPrice = getBestPrice(order);
     return order.isBuyOrder() ? sellBook.get(bestPrice) : buyBook.get(bestPrice);
   }
 
   public void reserveOrder(Order order) {
-    ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> book =
+    ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> book =
       order.isSellOrder() ? sellBook : buyBook;
 
     Optional.ofNullable(book.get(order.getPrice()))
@@ -49,9 +51,9 @@ public class OrderBook {
   public void addOrder(Order order) {
     order.setStatus(OrderStatus.ACTIVE);
 
-    ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> targetBook = order.isBuyOrder() ? buyBook : sellBook;
+    ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> targetBook = order.isBuyOrder() ? buyBook : sellBook;
 
-    ConcurrentSkipListMap<Date, List<Order>> timeMap =
+    ConcurrentSkipListMap<LocalDateTime, List<Order>> timeMap =
       targetBook.computeIfAbsent(order.getPrice(), k -> new ConcurrentSkipListMap<>());
 
     List<Order> ordersAtTime =
@@ -68,11 +70,11 @@ public class OrderBook {
     return reservedOrders.get(orderId);
   }
 
-  public ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> getBuyBook() {
+  public ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> getBuyBook() {
     return buyBook;
   }
 
-  public ConcurrentSkipListMap<Long, ConcurrentSkipListMap<Date, List<Order>>> getSellBook() {
+  public ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> getSellBook() {
     return sellBook;
   }
 }

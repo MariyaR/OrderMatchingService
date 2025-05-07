@@ -8,8 +8,8 @@ CREATE TABLE "orders"
     buy_order_id UUID NOT NULL,
     sell_order_id UUID NOT NULL,
     ticker_name VARCHAR(5) NOT NULL,
-    quantity INT NOT NULL,
-    price BIGINT NOT NULL,
+    quantity BIGINT NOT NULL,
+    price NUMERIC(19, 4) NOT NULL,
     created_at TIMESTAMP NOT NULL,
     trade_status VARCHAR(30) NOT NULL
 );

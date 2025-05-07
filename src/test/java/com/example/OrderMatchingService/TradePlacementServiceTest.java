@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,9 +32,9 @@ public class TradePlacementServiceTest {
     @Test
     void shouldSaveTradeInDatabase() {
         Trade trade = new Trade(
-                null, UUID.randomUUID(),UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(),"ticker", 200L
-                , 100,
-                new Date(), TradeStatus.CREATED
+                null, UUID.randomUUID(),UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(),"ticker", new BigDecimal(200)
+                , 100L,
+                LocalDateTime.now(), TradeStatus.CREATED
         );
 
         tradePlacementService.placeTrade(trade);

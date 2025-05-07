@@ -3,6 +3,8 @@ package com.example.OrderMatchingService.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -41,15 +43,15 @@ public class Trade {
 
   @Column(name = "price", nullable = false)
   @NonNull
-  public final long price;
+  public final BigDecimal price;
 
   @Column(name = "quantity", nullable = false)
   @NonNull
-  public final int quantity;
+  public final Long quantity;
 
   @Column(name = "created_at", nullable = false)
   @NonNull
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   @Column(name = "trade_status", nullable = false)
   @Enumerated(EnumType.STRING)

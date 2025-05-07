@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,8 +33,8 @@ public class OrderPlacementServiceTests {
     void shouldSaveOrderInDatabase() {
         Order order = new Order(
                 null, UUID.randomUUID(),
-                OperationType.BUY, "ticker", 100, 200L,
-                new Date(), OrderStatus.CREATED
+                OperationType.BUY, "ticker", 100L, new BigDecimal(200),
+                LocalDateTime.now(), OrderStatus.CREATED
         );
 
         orderPlacementService.placeOrder(order);

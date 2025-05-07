@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 @Getter
 @Setter
@@ -17,27 +18,27 @@ public class TradeExecutedEvent implements DomainEvent{
     private final UUID buyOrderId;
     private final UUID sellOrderId;
     private final String tickerName;
-    private final long price;
-    private final int quantity;
+    private final BigDecimal price;
+    private final Long quantity;
     private final UUID buyUserId;
     private final UUID sellUserId;
-    private final Date buyOrderDate;
-    private final Date sellOrderDate;
+    private final LocalDateTime buyOrderDate;
+    private final LocalDateTime sellOrderDate;
 
-    private final Date createdAt;
+    private final LocalDateTime createdAt;
 
     private final TradeStatus status;
     private boolean rollbackApplied;
 
 
     @Override
-    public Date createdAt() {
+    public LocalDateTime createdAt() {
         return createdAt;
     }
 
-    public TradeExecutedEvent(UUID tradeId, UUID buyOrderId, UUID sellOrderId, String tickerName, long price,
-                              int quantity, UUID buyUserId, UUID sellUserId, Date buyOrderDate, Date sellOrderDate,
-                              Date createdAt, TradeStatus status, boolean rollbackApplied) {
+    public TradeExecutedEvent(UUID tradeId, UUID buyOrderId, UUID sellOrderId, String tickerName, BigDecimal price,
+                              Long quantity, UUID buyUserId, UUID sellUserId, LocalDateTime buyOrderDate, LocalDateTime sellOrderDate,
+                              LocalDateTime createdAt, TradeStatus status, boolean rollbackApplied) {
         this.tradeId = tradeId;
         this.buyOrderId = buyOrderId;
         this.sellOrderId = sellOrderId;

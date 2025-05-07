@@ -1,7 +1,6 @@
 package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
 import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
 import com.example.OrderMatchingService.service.OrderBookFactory;
@@ -16,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -43,13 +44,13 @@ class OrderRecoveryServiceTest {
 
   private TradeExecutedEvent mockEvent;
 
-  private Order createBuyOrder(int quantity) {
-    return new Order(buyOrderId, UUID.randomUUID(), OperationType.BUY, TICKER, quantity, 100L, now, OrderStatus.CREATED);
+  private Order createBuyOrder(Long quantity) {
+    return new Order(buyOrderId, UUID.randomUUID(), OperationType.BUY, TICKER, quantity, new BigDecimal(100), LocalDateTime.now(), OrderStatus.CREATED);
   }
 
   // Helper method for creating a sell order
-  private Order createSellOrder(int quantity) {
-    return new Order(sellOrderId, UUID.randomUUID(), OperationType.SELL, TICKER, quantity, 100L, now, OrderStatus.CREATED);
+  private Order createSellOrder(Long quantity) {
+    return new Order(sellOrderId, UUID.randomUUID(), OperationType.SELL, TICKER, quantity, new BigDecimal(100), LocalDateTime.now(), OrderStatus.CREATED);
   }
 
   private TradeExecutedEvent createTradeEvent(Order buyOrder, Order sellOrder) {
@@ -58,13 +59,13 @@ class OrderRecoveryServiceTest {
             buyOrder.getOrderID(),
             sellOrder.getOrderID(),
             TICKER,
-            100L,
+            new BigDecimal(100),
             Math.min(buyOrder.getQuantity(), sellOrder.getQuantity()),
             UUID.randomUUID(),
             UUID.randomUUID(),
             buyOrder.getCreatedAt(),
             sellOrder.getCreatedAt(),
-            new Date(),
+            LocalDateTime.now(),
             TradeStatus.FAILED,
             false
     );
@@ -78,8 +79,8 @@ class OrderRecoveryServiceTest {
 
   @Test
   void rollback_fullMatch_shouldRestoreOrders() {
-    Order buyOrder = createBuyOrder(5);
-    Order sellOrder = createSellOrder(5);
+    Order buyOrder = createBuyOrder(5L);
+    Order sellOrder = createSellOrder(5L);
     mockEvent = createTradeEvent(buyOrder, sellOrder);
 
     orderMatcher.match(buyOrder);
@@ -101,8 +102,8 @@ class OrderRecoveryServiceTest {
 
   @Test
   void rollback_partialMatch_shouldRestoreRemainingOrders() {
-    Order buyOrder = createBuyOrder(10);
-    Order sellOrder = createSellOrder(5);
+    Order buyOrder = createBuyOrder(10L);
+    Order sellOrder = createSellOrder(5L);
     mockEvent = createTradeEvent(buyOrder, sellOrder);
 
     orderMatcher.match(buyOrder);
@@ -124,9 +125,9 @@ class OrderRecoveryServiceTest {
 
   @Test
   void rollback_orderAlreadyCancelled_shouldThrowException() {
-    Order buyOrder = createBuyOrder(5);
+    Order buyOrder = createBuyOrder(5L);
     buyOrder.setStatus(OrderStatus.CANCELLED);
-    Order sellOrder = createSellOrder(5);
+    Order sellOrder = createSellOrder(5L);
     sellOrder.setStatus(OrderStatus.CANCELLED);
 
     mockEvent = createTradeEvent(buyOrder, sellOrder);
@@ -141,7 +142,7 @@ class OrderRecoveryServiceTest {
 
   @Test
   void finalize_shouldRemoveFromReservedOrders() {
-    Order buyOrder = createBuyOrder(10);
+    Order buyOrder = createBuyOrder(10L);
     buyOrder.setStatus(OrderStatus.RESERVED);
     orderBook.reserveOrder(buyOrder);
 
@@ -156,7 +157,7 @@ class OrderRecoveryServiceTest {
   @Test
   void finalize_orderNotReserved_shouldThrowException() {
     // Create an order that is not reserved
-    Order buyOrder = createBuyOrder(5);
+    Order buyOrder = createBuyOrder(5L);
     buyOrder.setStatus(OrderStatus.ACTIVE);
 
     IllegalStateException exception = assertThrows(
@@ -174,21 +175,21 @@ class OrderRecoveryServiceTest {
 
   @Test
   void rollback_missingOrderId_shouldThrowException() {
-    Order buyOrder = createBuyOrder(5);
-    Order sellOrder = createSellOrder(5);
+    Order buyOrder = createBuyOrder(5L);
+    Order sellOrder = createSellOrder(5L);
     // Simulate a missing order ID in the event
     mockEvent = new TradeExecutedEvent(
             UUID.randomUUID(),
             null,  // Missing order ID
             sellOrderId,
             TICKER,
-            100L,
+            new BigDecimal(100),
             buyOrder.getQuantity(),
             UUID.randomUUID(),
             UUID.randomUUID(),
             buyOrder.getCreatedAt(),
             sellOrder.getCreatedAt(),
-            new Date(),
+            LocalDateTime.now(),
             TradeStatus.CONFIRMED,
             false
     );
@@ -198,8 +199,8 @@ class OrderRecoveryServiceTest {
 
   @Test
   void rollback_multipleTimes() {
-    Order buyOrder = createBuyOrder(10);
-    Order sellOrder = createSellOrder(5);
+    Order buyOrder = createBuyOrder(10L);
+    Order sellOrder = createSellOrder(5L);
 
     // Create trade event for rollback
     mockEvent = createTradeEvent(buyOrder, sellOrder);

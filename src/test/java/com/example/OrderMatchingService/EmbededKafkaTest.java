@@ -11,6 +11,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class EmbededKafkaTest {
                 "ticker",
                 80,
                 150L,
-                new Date()
+                LocalDateTime.now()
         );
 
 

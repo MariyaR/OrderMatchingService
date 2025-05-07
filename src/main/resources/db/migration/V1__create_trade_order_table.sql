@@ -6,8 +6,8 @@ CREATE TABLE "trade_order"
   user_id UUID NOT NULL,
   operation_type VARCHAR(5) NOT NULL,
   ticker_name VARCHAR(5) NOT NULL,
-  quantity INT NOT NULL,
-  price BIGINT NOT NULL,
+  quantity BIGINT NOT NULL,
+  price NUMERIC(19, 4) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   order_status VARCHAR(30) NOT NULL
 );
