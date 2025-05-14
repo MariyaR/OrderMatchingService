@@ -11,5 +11,6 @@ CREATE TABLE "orders"
     quantity BIGINT NOT NULL,
     price NUMERIC(19, 4) NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    trade_status VARCHAR(30) NOT NULL
+    trade_status VARCHAR(30) NOT NULL,
+    failure_reason VARCHAR(30) NOT NULL
 );

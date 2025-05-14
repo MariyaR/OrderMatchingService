@@ -57,4 +57,9 @@ public class Trade {
   @Enumerated(EnumType.STRING)
   @NonNull
   private TradeStatus status;
+
+  @Column(name = "failure_reason", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @NonNull
+  private TradeFailureReason failureReason;
 }
