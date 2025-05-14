@@ -1,6 +1,7 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Trade;
+import com.example.OrderMatchingService.domain.TradeFailureReason;
 import com.example.OrderMatchingService.domain.TradeStatus;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
@@ -22,6 +23,7 @@ public class TradeEventMapper {
       .quantity(event.getQuantity())
       .createdAt(event.getCreatedAt())
       .status(TradeStatus.PENDING)
+      .failureReason(TradeFailureReason.EMPTY_FAILURE_REASON)
       .build();
   }
 
@@ -37,6 +39,7 @@ public class TradeEventMapper {
             .quantity(event.getQuantity())
             .createdAt(event.getCreatedAt())
             .status(event.getStatus())
+            .failureReason(TradeFailureReason.EMPTY_FAILURE_REASON)
             .build();
   }
 

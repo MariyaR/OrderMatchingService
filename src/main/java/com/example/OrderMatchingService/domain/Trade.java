@@ -61,5 +61,5 @@ public class Trade {
   @Column(name = "failure_reason", nullable = false)
   @Enumerated(EnumType.STRING)
   @NonNull
-  private TradeFailureReason failureReason;
+  private TradeFailureReason failureReason = TradeFailureReason.EMPTY_FAILURE_REASON;
 }
