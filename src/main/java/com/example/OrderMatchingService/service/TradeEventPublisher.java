@@ -2,13 +2,15 @@ package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Trade;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TradeEventPublisher {
 
-    private final String TRADE_TOPIC = "trade_event";
+    @Value("${kafka.topics.trade-created}")
+    private String tradeCreatedTopic;
 
     private final KafkaTemplate<String, TradeCreatedEvent> kafkaTemplate;
 
@@ -17,6 +19,6 @@ public class TradeEventPublisher {
     }
 
     public void publishTradeCreated(TradeCreatedEvent tradeEvent) {
-        kafkaTemplate.send(TRADE_TOPIC, tradeEvent);
+        kafkaTemplate.send(tradeCreatedTopic, tradeEvent);
     }
 }
