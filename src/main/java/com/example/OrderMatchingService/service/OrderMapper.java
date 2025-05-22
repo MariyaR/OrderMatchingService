@@ -13,7 +13,7 @@ public class OrderMapper {
 
   public Order mapToOrer (OrderDto dto) {
     return Order.builder()
-      .orderID(UUID.randomUUID())  // Generate a random UUID for the order ID
+      .orderID(null)
       .userId(dto.getUserId())
       .operationType(dto.getOperationType())
       .tickerName(dto.getTickerName())

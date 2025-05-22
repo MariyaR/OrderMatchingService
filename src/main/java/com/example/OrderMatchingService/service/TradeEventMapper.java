@@ -1,8 +1,6 @@
 package com.example.OrderMatchingService.service;
 
-import com.example.OrderMatchingService.domain.Trade;
-import com.example.OrderMatchingService.domain.TradeFailureReason;
-import com.example.OrderMatchingService.domain.TradeStatus;
+import com.example.OrderMatchingService.domain.*;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
 
@@ -41,9 +39,5 @@ public class TradeEventMapper {
             .status(event.getStatus())
             .failureReason(TradeFailureReason.EMPTY_FAILURE_REASON)
             .build();
-  }
-
-  public static List<Trade> fromListEvents (List<TradeCreatedEvent> events) {
-    return events.stream().map(TradeEventMapper::fromEvent).collect(Collectors.toList());
   }
 }

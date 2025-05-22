@@ -26,7 +26,7 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
             Order buyOrder = order.isBuyOrder() ? order : match;
             Order sellOrder = order.isSellOrder() ? order : match;
 
-            Trade trade = new Trade(UUID.randomUUID(), buyOrder.getUserId(), sellOrder.getUserId(), buyOrder.getOrderID(),
+            Trade trade = new Trade(null, buyOrder.getUserId(), sellOrder.getUserId(), buyOrder.getOrderID(),
               sellOrder.getOrderID(), order.getTickerName(), bestPrice, tradedQty, LocalDateTime.now(), TradeStatus.PENDING, TradeFailureReason.EMPTY_FAILURE_REASON);
 
 

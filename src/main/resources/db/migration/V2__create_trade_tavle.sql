@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS "trade";
 
-CREATE TABLE "orders"
+CREATE TABLE "trade"
 (
     trade_id UUID PRIMARY KEY,
     buyer_id UUID NOT NULL,

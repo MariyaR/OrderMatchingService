@@ -9,9 +9,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class TradeEventListener {
 
-    @KafkaListener(topics = "${kafka.topics.trade-executed}")
-    public void handleIncomingOrder(TradeExecutedEvent executedEvent) {
+  private final TradeExecutedHandler tradeExecutedHandler;
+
+  public TradeEventListener(TradeExecutedHandler tradeExecutedHandler) {
+    this.tradeExecutedHandler = tradeExecutedHandler;
+  }
+
+  @KafkaListener(topics = "${kafka.topics.trade-executed}")
+    public void handleIncomingTrade(TradeExecutedEvent executedEvent) {
+      tradeExecutedHandler.handleEvent(executedEvent);
     }
-
-
 }

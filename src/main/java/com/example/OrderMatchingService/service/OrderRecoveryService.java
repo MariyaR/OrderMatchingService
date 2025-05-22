@@ -6,6 +6,7 @@ import com.example.OrderMatchingService.domain.OrderStatus;
 import com.example.OrderMatchingService.domain.Trade;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
+import com.example.OrderMatchingService.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -17,14 +18,16 @@ import java.util.UUID;
 public class OrderRecoveryService {
 
   private final OrderBookFactory orderBookFactory;
+  private final OrderPlacementService orderPlacementService;
 
   private static final Set<OrderStatus> ROLLBACK_ELIGIBLE_STATUSES = EnumSet.of(
           OrderStatus.RESERVED,
           OrderStatus.ACTIVE
   );
 
-  public OrderRecoveryService(OrderBookFactory orderBookFactory) {
+  public OrderRecoveryService(OrderBookFactory orderBookFactory, OrderPlacementService orderPlacementService) {
     this.orderBookFactory = orderBookFactory;
+    this.orderPlacementService = orderPlacementService;
   }
 
   public void rollback(TradeExecutedEvent event) {
@@ -72,16 +75,30 @@ public class OrderRecoveryService {
     event.setRollbackApplied(true);
   }
 
-  public void finalize(Order order) {
+  public void finalize(TradeExecutedEvent event) {
+    OrderBook orderBook = orderBookFactory.getOrCreate(event.getTickerName());
 
-    if (order.getStatus() != OrderStatus.RESERVED) {
+    Order buyOrder = getReservedOrderOrThrow(orderBook, event.getBuyOrderId());
+    Order sellOrder = getReservedOrderOrThrow(orderBook, event.getSellOrderId());
+
+    completeOrder(orderBook, buyOrder);
+    completeOrder(orderBook, sellOrder);
+  }
+
+  private Order getReservedOrderOrThrow(OrderBook orderBook, UUID orderId) {
+    Order order = orderBook.getReservedOrder(orderId);
+    if (order == null || order.getStatus() != OrderStatus.RESERVED) {
       throw new IllegalStateException("Cannot finalize order: not in RESERVED state");
     }
+    return order;
+  }
 
-    OrderBook orderBook = orderBookFactory.getOrCreate(order.getTickerName());
+  private void completeOrder(OrderBook orderBook, Order order) {
     orderBook.removeFromReserved(order);
     order.setStatus(OrderStatus.COMPLETED);
+    orderPlacementService.placeOrder(order);
   }
+
 
   private void rollBack(Order order, Trade trade, OrderBook orderBook) {
     if (!ROLLBACK_ELIGIBLE_STATUSES.contains(order.getStatus())) {
