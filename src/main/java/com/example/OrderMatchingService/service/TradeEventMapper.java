@@ -4,8 +4,8 @@ import com.example.OrderMatchingService.domain.*;
 import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class TradeEventMapper {
 
@@ -21,7 +21,9 @@ public class TradeEventMapper {
       .quantity(event.getQuantity())
       .createdAt(event.getCreatedAt())
       .status(TradeStatus.PENDING)
-      .failureReason(TradeFailureReason.EMPTY_FAILURE_REASON)
+      .failureReasons(new ArrayList<>(
+              Collections.singletonList(TradeFailureReason.EMPTY_FAILURE_REASON)
+      ))
       .build();
   }
 
@@ -37,7 +39,8 @@ public class TradeEventMapper {
             .quantity(event.getQuantity())
             .createdAt(event.getCreatedAt())
             .status(event.getStatus())
-            .failureReason(TradeFailureReason.EMPTY_FAILURE_REASON)
+            .failureReasons(event.getFailureReasons())
             .build();
   }
+
 }

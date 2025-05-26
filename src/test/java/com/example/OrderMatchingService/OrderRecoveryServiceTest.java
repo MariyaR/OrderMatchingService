@@ -3,10 +3,7 @@ package com.example.OrderMatchingService;
 import com.example.OrderMatchingService.domain.*;
 import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
 import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
-import com.example.OrderMatchingService.service.OrderBookFactory;
-import com.example.OrderMatchingService.service.OrderMatcher;
-import com.example.OrderMatchingService.service.OrderMatcherFactory;
-import com.example.OrderMatchingService.service.OrderRecoveryService;
+import com.example.OrderMatchingService.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +29,9 @@ class OrderRecoveryServiceTest {
 
   @Mock
   private OrderMatcherFactory orderMatcherFactory;
+
+  @Mock
+  private OrderPlacementService orderPlacementService;
 
   @InjectMocks
   private OrderRecoveryService orderRecoveryService;
@@ -54,22 +55,21 @@ class OrderRecoveryServiceTest {
   }
 
   private TradeExecutedEvent createTradeEvent(Order buyOrder, Order sellOrder) {
-    return new TradeExecutedEvent(
-            UUID.randomUUID(),
+    return new TradeExecutedEvent(UUID.randomUUID(),
             buyOrder.getOrderID(),
             sellOrder.getOrderID(),
             TICKER,
             new BigDecimal(100),
             Math.min(buyOrder.getQuantity(), sellOrder.getQuantity()),
-            UUID.randomUUID(),
-            UUID.randomUUID(),
+            buyOrder.getUserId(),
+            sellOrder.getUserId(),
             buyOrder.getCreatedAt(),
             sellOrder.getCreatedAt(),
-            LocalDateTime.now(),
             TradeStatus.FAILED,
-            false, TradeFailureReason.EMPTY_FAILURE_REASON
+            TradeFailureReason.getEmptyFailureList()
     );
   }
+
 
   @BeforeEach
   void setUp() {
@@ -140,32 +140,42 @@ class OrderRecoveryServiceTest {
     );
   }
 
-//  @Test
-//  void finalize_shouldRemoveFromReservedOrders() {
-//    Order buyOrder = createBuyOrder(10L);
-//    buyOrder.setStatus(OrderStatus.RESERVED);
-//    orderBook.reserveOrder(buyOrder);
-//
-//    assertEquals(OrderStatus.RESERVED, buyOrder.getStatus());
-//
-//    orderRecoveryService.finalize(buyOrder);
-//
-//    assertEquals(OrderStatus.COMPLETED, buyOrder.getStatus());
-//    assertNull(orderBook.getReservedOrder(buyOrderId));
-//  }
+  @Test
+  void finalize_shouldRemoveFromReservedOrders() {
+    Order buyOrder = createBuyOrder(10L);
+    Order sellOrder = createSellOrder(10L);
 
-//  @Test
-//  void finalize_orderNotReserved_shouldThrowException() {
-//    // Create an order that is not reserved
-//    Order buyOrder = createBuyOrder(5L);
-//    buyOrder.setStatus(OrderStatus.ACTIVE);
-//
-//    IllegalStateException exception = assertThrows(
-//            IllegalStateException.class,
-//            () -> orderRecoveryService.finalize(buyOrder),
-//            "Expected finalize() to throw an exception for non-RESERVED order"
-//    );
-//  }
+    buyOrder.setStatus(OrderStatus.RESERVED);
+    sellOrder.setStatus(OrderStatus.RESERVED);
+    orderBook.reserveOrder(buyOrder);
+    orderBook.reserveOrder(sellOrder);
+
+    assertEquals(OrderStatus.RESERVED, buyOrder.getStatus());
+
+    orderRecoveryService.finalize(createTradeEvent(buyOrder, sellOrder));
+
+    assertEquals(OrderStatus.COMPLETED, buyOrder.getStatus());
+    assertEquals(OrderStatus.COMPLETED, sellOrder.getStatus());
+    assertNull(orderBook.getReservedOrder(buyOrderId));
+    assertNull(orderBook.getReservedOrder(sellOrderId));
+  }
+
+  @Test
+  void finalize_orderNotReserved_shouldThrowException() {
+    // Create an order that is not reserved
+    Order buyOrder = createBuyOrder(5L);
+    buyOrder.setStatus(OrderStatus.ACTIVE);
+
+    Order sellOrder = createSellOrder(10L);
+    sellOrder.setStatus(OrderStatus.RESERVED);
+    orderBook.reserveOrder(sellOrder);
+
+    IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> orderRecoveryService.finalize(createTradeEvent(buyOrder, sellOrder)),
+            "Expected finalize() to throw an exception for non-RESERVED order"
+    );
+  }
 
   @Test
   void rollback_nullEvent_shouldThrowException() {
@@ -173,29 +183,28 @@ class OrderRecoveryServiceTest {
     assertThrows(IllegalArgumentException.class, () -> orderRecoveryService.rollback(null));
   }
 
-//  @Test
-//  void rollback_missingOrderId_shouldThrowException() {
-//    Order buyOrder = createBuyOrder(5L);
-//    Order sellOrder = createSellOrder(5L);
-//    // Simulate a missing order ID in the event
-//    mockEvent = new TradeExecutedEvent(
-//            UUID.randomUUID(),
-//            null,  // Missing order ID
-//            sellOrderId,
-//            TICKER,
-//            new BigDecimal(100),
-//            buyOrder.getQuantity(),
-//            UUID.randomUUID(),
-//            UUID.randomUUID(),
-//            buyOrder.getCreatedAt(),
-//            sellOrder.getCreatedAt(),
-//            LocalDateTime.now(),
-//            TradeStatus.CONFIRMED,
-//            false
-//    );
-//
-//    assertThrows(IllegalArgumentException.class, () -> orderRecoveryService.rollback(mockEvent));
-//  }
+  @Test
+  void rollback_missingOrderId_shouldThrowException() {
+    Order buyOrder = createBuyOrder(5L);
+    Order sellOrder = createSellOrder(5L);
+    // Simulate a missing order ID in the event
+    mockEvent = new TradeExecutedEvent(
+            UUID.randomUUID(),
+            null,  // Missing order ID
+            sellOrderId,
+            TICKER,
+            new BigDecimal(100),
+            buyOrder.getQuantity(),
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            buyOrder.getCreatedAt(),
+            sellOrder.getCreatedAt(),
+            TradeStatus.CONFIRMED,
+            TradeFailureReason.getEmptyFailureList()
+    );
+
+    assertThrows(IllegalArgumentException.class, () -> orderRecoveryService.rollback(mockEvent));
+  }
 
   @Test
   void rollback_multipleTimes() {

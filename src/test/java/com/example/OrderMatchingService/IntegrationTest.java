@@ -41,18 +41,18 @@ public class IntegrationTest {
   @BeforeEach
   public void setUp() {
      buyOrder = OrderDto.builder()
-      .userId(UUID.fromString("3f6c2c26-56f3-4e75-9016-f1879e2cbd5d"))
+      .userId(UUID.fromString("${test.buyOrder.account}"))
       .operationType(OperationType.BUY)
-      .tickerName("ticker")
+      .tickerName(TICKER)
       .quantity(5L)
       .price(new BigDecimal("100"))
       .createdAt(LocalDateTime.now())
       .build();
 
      sellOrder = OrderDto.builder()
-      .userId(UUID.fromString("e8b1b4ce-2ef8-4e2a-9f6f-df4ab6e3bcb4"))
+      .userId(UUID.fromString("${test.sellOrder.account}"))
       .operationType(OperationType.SELL)
-      .tickerName("ticker")
+      .tickerName(TICKER)
       .quantity(5L)
       .price(new BigDecimal("100"))
       .createdAt(LocalDateTime.now())

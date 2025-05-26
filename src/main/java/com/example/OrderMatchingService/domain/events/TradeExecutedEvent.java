@@ -2,41 +2,44 @@ package com.example.OrderMatchingService.domain.events;
 
 import com.example.OrderMatchingService.domain.TradeFailureReason;
 import com.example.OrderMatchingService.domain.TradeStatus;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor(force = true)
-@Builder
-@AllArgsConstructor
-public class TradeExecutedEvent implements DomainEvent{
+public class TradeExecutedEvent extends AbstractEvent{
 
-    private final UUID tradeExecutedEventId = UUID.randomUUID();
-    private final UUID tradeId;
-    private final UUID buyOrderId;
-    private final UUID sellOrderId;
-    private final String tickerName;
-    private final BigDecimal price;
-    private final Long quantity;
-    private final UUID buyUserId;
-    private final UUID sellUserId;
-    private final LocalDateTime buyOrderDate;
-    private final LocalDateTime sellOrderDate;
-
-    private final LocalDateTime createdAt;
-
-    private TradeStatus status;
-    private boolean rollbackApplied;
-
+    private final TradeStatus status;
+    private boolean rollbackApplied = false;
+    private List<TradeFailureReason> failureReasons = TradeFailureReason.getEmptyFailureList();
     private TradeFailureReason failureReason;
 
-
-    @Override
-    public LocalDateTime createdAt() {
-        return createdAt;
+    public TradeExecutedEvent(
+            UUID tradeId,
+            UUID buyOrderId,
+            UUID sellOrderId,
+            String tickerName,
+            BigDecimal price,
+            Long quantity,
+            UUID buyUserId,
+            UUID sellUserId,
+            LocalDateTime buyOrderDate,
+            LocalDateTime sellOrderDate,
+            TradeStatus status,
+            List<TradeFailureReason> failureReasons
+    ) {
+        super(tradeId, buyOrderId, sellOrderId, tickerName, price, quantity, buyUserId, sellUserId, buyOrderDate, sellOrderDate);
+        this.status = status;
+        this.failureReasons = failureReasons;
     }
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "trade_order")
 @Getter
 @Setter
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class Order {

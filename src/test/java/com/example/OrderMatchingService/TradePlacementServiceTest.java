@@ -34,7 +34,7 @@ public class TradePlacementServiceTest {
         Trade trade = new Trade(
                 null, UUID.randomUUID(),UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(),"ticker", new BigDecimal(200)
                 , 100L,
-                LocalDateTime.now(), TradeStatus.CREATED, TradeFailureReason.EMPTY_FAILURE_REASON
+                LocalDateTime.now(), TradeStatus.CREATED, TradeFailureReason.getEmptyFailureList()
         );
 
         tradePlacementService.placeTrade(trade);
