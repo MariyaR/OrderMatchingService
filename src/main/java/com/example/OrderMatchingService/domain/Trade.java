@@ -1,5 +1,6 @@
 package com.example.OrderMatchingService.domain;
 
+import com.example.OrderMatchingService.service.TradeFailureReasonListConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,11 +58,8 @@ public class Trade {
   @NonNull
   private TradeStatus status;
 
-  @ElementCollection(targetClass = TradeFailureReason.class)
-  @CollectionTable(name = "trade_failure_reasons", joinColumns = @JoinColumn(name = "entity_id"))
-  @Column(name = "failure_reason")
-  @Enumerated(EnumType.STRING)
-  private List<TradeFailureReason> failureReasons = new ArrayList<>(
-          Collections.singletonList(TradeFailureReason.EMPTY_FAILURE_REASON)
-  );
+  @Convert(converter = TradeFailureReasonListConverter.class)
+  @Column(name = "failure_reasons")
+  private List<TradeFailureReason> failureReasons;
+
 }
