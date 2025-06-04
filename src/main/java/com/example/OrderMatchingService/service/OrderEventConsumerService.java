@@ -1,7 +1,6 @@
 package com.example.OrderMatchingService.service;
 
-import com.example.OrderMatchingService.domain.events.OrderMatchedEvent;
-import org.springframework.beans.factory.annotation.Value;
+import com.example.events.OrderMatchedEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
+import com.example.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 
 import java.util.*;

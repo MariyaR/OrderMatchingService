@@ -30,8 +30,8 @@ services:
     ports:
       - "9092:9092"
       - "9093:9093"
-    volumes:
-      - kafka_data:/bitnami/kafka
+#    volumes:
+#      - kafka_data:/bitnami/kafka
     networks:
       - mynetwork
 

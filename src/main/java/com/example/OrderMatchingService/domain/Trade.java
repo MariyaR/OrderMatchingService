@@ -1,6 +1,7 @@
 package com.example.OrderMatchingService.domain;
 
 import com.example.OrderMatchingService.service.TradeFailureReasonListConverter;
+import com.example.events.TradeExecutedEvent;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,9 +13,7 @@ import java.util.*;
 @Table(name = "trade")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Trade {
   @Id
   @GeneratedValue
@@ -61,5 +60,38 @@ public class Trade {
   @Convert(converter = TradeFailureReasonListConverter.class)
   @Column(name = "failure_reasons")
   private List<TradeFailureReason> failureReasons;
+
+  @Builder
+  public Trade(UUID tradeID,
+                UUID buyerId,
+                UUID sellerId,
+                UUID buyOrderId,
+                UUID sellOrderId,
+                String tickerName,
+                Long quantity,
+                BigDecimal price,
+                LocalDateTime createdAt,
+                TradeStatus status,
+                List<TradeFailureReason> failureReasons) {
+    this.tradeID = tradeID;
+    this.buyerId = buyerId;
+    this.sellerId = sellerId;
+    this.buyOrderId = buyOrderId;
+    this.sellOrderId = sellOrderId;
+    this.tickerName = tickerName;
+    this.quantity = quantity;
+    this.price = price;
+    this.createdAt = createdAt;
+    this.status = status;
+    this.failureReasons = failureReasons;
+  }
+
+  // ✅ Factory method for new trade creation (ID will be null)
+  public static Trade createNew(UUID buyerId, UUID sellerId, UUID buyOrderId,
+                                UUID sellOrderId, String tickerName, long quantity,
+                                BigDecimal price) {
+    return new Trade(null, buyerId, sellerId, buyOrderId, sellOrderId,
+      tickerName, quantity, price, LocalDateTime.now(), TradeStatus.CREATED, TradeFailureReason.getEmptyFailureList());
+  }
 
 }

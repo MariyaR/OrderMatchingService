@@ -1,7 +1,6 @@
-package com.example.OrderMatchingService.domain.events;
+package com.example.events;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public interface DomainEvent {
     LocalDateTime createdAt();

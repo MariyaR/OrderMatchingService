@@ -1,8 +1,8 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
-import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
+import com.example.events.TradeCreatedEvent;
+import com.example.events.TradeExecutedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;

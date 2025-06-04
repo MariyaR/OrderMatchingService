@@ -2,7 +2,7 @@ package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.Trade;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
+import com.example.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.dto.OrderDto;
 import org.springframework.stereotype.Service;
 

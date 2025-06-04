@@ -1,15 +1,13 @@
-package com.example.OrderMatchingService.domain.events;
+package com.example.events;
 
 import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.Trade;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Getter

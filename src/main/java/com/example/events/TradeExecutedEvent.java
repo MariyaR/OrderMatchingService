@@ -1,4 +1,4 @@
-package com.example.OrderMatchingService.domain.events;
+package com.example.events;
 
 import com.example.OrderMatchingService.domain.TradeFailureReason;
 import com.example.OrderMatchingService.domain.TradeStatus;
@@ -22,7 +22,6 @@ public class TradeExecutedEvent extends AbstractEvent{
     private final TradeStatus status;
     private boolean rollbackApplied = false;
     private List<TradeFailureReason> failureReasons = TradeFailureReason.getEmptyFailureList();
-    private TradeFailureReason failureReason;
 
     public TradeExecutedEvent(
             UUID tradeId,

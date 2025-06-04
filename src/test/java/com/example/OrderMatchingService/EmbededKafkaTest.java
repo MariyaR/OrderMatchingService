@@ -1,6 +1,6 @@
 package com.example.OrderMatchingService;
 
-import com.example.OrderMatchingService.domain.events.OrderMatchedEvent;
+import com.example.events.OrderMatchedEvent;
 import com.example.OrderMatchingService.service.OrderEventConsumerService;
 import com.example.OrderMatchingService.service.OrderEventPublisher;
 import org.awaitility.Awaitility;
@@ -12,7 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;

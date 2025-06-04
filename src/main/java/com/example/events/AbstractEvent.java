@@ -1,4 +1,4 @@
-package com.example.OrderMatchingService.domain.events;
+package com.example.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

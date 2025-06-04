@@ -1,7 +1,7 @@
 package com.example.OrderMatchingService.domain.matching;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
+import com.example.events.TradeCreatedEvent;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,8 +26,8 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
             Order buyOrder = order.isBuyOrder() ? order : match;
             Order sellOrder = order.isSellOrder() ? order : match;
 
-            Trade trade = new Trade(UUID.randomUUID(), buyOrder.getUserId(), sellOrder.getUserId(), buyOrder.getOrderID(),
-              sellOrder.getOrderID(), order.getTickerName(), bestPrice, tradedQty, LocalDateTime.now(), TradeStatus.PENDING, TradeFailureReason.getEmptyFailureList());
+            Trade trade = Trade.createNew(buyOrder.getUserId(), sellOrder.getUserId(), buyOrder.getOrderID(),
+              sellOrder.getOrderID(), order.getTickerName(), tradedQty, bestPrice);
 
             tradeEvents.add(new TradeCreatedEvent(trade, buyOrder, sellOrder));
 

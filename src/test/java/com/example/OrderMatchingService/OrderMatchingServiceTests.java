@@ -1,7 +1,7 @@
 package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
+import com.example.events.TradeCreatedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
 import com.example.OrderMatchingService.service.OrderBookFactory;
@@ -13,10 +13,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 

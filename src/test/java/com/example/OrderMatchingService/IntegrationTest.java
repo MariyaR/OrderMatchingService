@@ -2,24 +2,19 @@ package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.OperationType;
 import com.example.OrderMatchingService.domain.Order;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
-import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
-import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
 import com.example.OrderMatchingService.dto.OrderDto;
 import com.example.OrderMatchingService.repository.OrderRepository;
-import com.example.OrderMatchingService.service.OrderBookFactory;
-import com.example.OrderMatchingService.service.OrderMatcher;
 import com.example.OrderMatchingService.service.OrderProcessingService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,11 +32,17 @@ public class IntegrationTest {
   private OrderDto buyOrder;
   private OrderDto sellOrder;
 
+  @Value("${test.buyOrder.account}")
+  private String buyOrderAccount;
+
+  @Value("${test.sellOrder.account}")
+  private String sellOrderAccount;
+
 
   @BeforeEach
   public void setUp() {
      buyOrder = OrderDto.builder()
-      .userId(UUID.fromString("${test.buyOrder.account}"))
+      .userId(UUID.fromString(buyOrderAccount))
       .operationType(OperationType.BUY)
       .tickerName(TICKER)
       .quantity(5L)
@@ -50,7 +51,7 @@ public class IntegrationTest {
       .build();
 
      sellOrder = OrderDto.builder()
-      .userId(UUID.fromString("${test.sellOrder.account}"))
+      .userId(UUID.fromString(sellOrderAccount))
       .operationType(OperationType.SELL)
       .tickerName(TICKER)
       .quantity(5L)

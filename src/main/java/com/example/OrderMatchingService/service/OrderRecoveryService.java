@@ -4,9 +4,7 @@ import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.OrderBook;
 import com.example.OrderMatchingService.domain.OrderStatus;
 import com.example.OrderMatchingService.domain.Trade;
-import com.example.OrderMatchingService.domain.events.TradeCreatedEvent;
-import com.example.OrderMatchingService.domain.events.TradeExecutedEvent;
-import com.example.OrderMatchingService.repository.OrderRepository;
+import com.example.events.TradeExecutedEvent;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
