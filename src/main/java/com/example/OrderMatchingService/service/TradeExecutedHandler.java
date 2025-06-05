@@ -1,6 +1,6 @@
 package com.example.OrderMatchingService.service;
 
-import com.example.OrderMatchingService.domain.TradeStatus;
+import com.example.events.TradeStatus;
 import com.example.events.TradeExecutedEvent;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package com.example.OrderMatchingService.service;
 
 
 import com.example.OrderMatchingService.domain.Order;
-import com.example.events.TradeCreatedEvent;
+import com.example.events.OrderMatchedEvent;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class OrderMatchingService {
     this.orderMatcherFactory = orderMatcherFactory;
   }
 
-  List<TradeCreatedEvent> match (Order order) {
+  List<OrderMatchedEvent> match (Order order) {
     OrderMatcher matcher = orderMatcherFactory.get(order.getTickerName());
     return matcher.match(order);
   }

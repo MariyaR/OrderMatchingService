@@ -1,4 +1,4 @@
-package com.example.OrderMatchingService.domain;
+package com.example.events;
 
 import java.util.ArrayList;
 import java.util.List;

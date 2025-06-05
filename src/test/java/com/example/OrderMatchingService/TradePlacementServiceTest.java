@@ -1,10 +1,6 @@
 package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.OrderMatchingService.repository.OrderRepository;
-import com.example.OrderMatchingService.repository.TradeRepository;
-import com.example.OrderMatchingService.service.OrderPlacementService;
-import com.example.OrderMatchingService.service.TradePlacementService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,25 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 public class TradePlacementServiceTest {
 
-    @Autowired
-    private TradeRepository tradeRepository;
-
-    @Autowired
-    private TradePlacementService tradePlacementService;
-
-    @Test
-    void shouldSaveTradeInDatabase() {
-        Trade trade = new Trade(
-                null, UUID.randomUUID(),UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(),"ticker", new BigDecimal(200)
-                , 100L,
-                LocalDateTime.now(), TradeStatus.CREATED, TradeFailureReason.getEmptyFailureList()
-        );
-
-        tradePlacementService.placeTrade(trade);
-
-        Optional<Trade> savedTrade = tradeRepository.findById(trade.getTradeID());
-
-        assertTrue(savedTrade.isPresent());
-        assertEquals(trade.getTradeID(), savedTrade.get().getTradeID());
-    }
+//    @Autowired
+//    private TradeRepository tradeRepository;
+//
+//    @Autowired
+//    private TradePlacementService tradePlacementService;
+//
+//    @Test
+//    void shouldSaveTradeInDatabase() {
+//        Trade trade = new Trade(
+//                null, UUID.randomUUID(),UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(),"ticker", new BigDecimal(200)
+//                , 100L,
+//                LocalDateTime.now(), TradeStatus.CREATED, TradeFailureReason.getEmptyFailureList()
+//        );
+//
+//        tradePlacementService.placeTrade(trade);
+//
+//        Optional<Trade> savedTrade = tradeRepository.findById(trade.getTradeID());
+//
+//        assertTrue(savedTrade.isPresent());
+//        assertEquals(trade.getTradeID(), savedTrade.get().getTradeID());
+//    }
 }

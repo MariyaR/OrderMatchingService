@@ -4,6 +4,8 @@ import com.example.OrderMatchingService.domain.*;
 import com.example.events.TradeExecutedEvent;
 import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
 import com.example.OrderMatchingService.service.*;
+import com.example.events.TradeFailureReason;
+import com.example.events.TradeStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

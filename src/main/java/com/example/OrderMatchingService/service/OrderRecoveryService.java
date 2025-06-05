@@ -3,7 +3,6 @@ package com.example.OrderMatchingService.service;
 import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.OrderBook;
 import com.example.OrderMatchingService.domain.OrderStatus;
-import com.example.OrderMatchingService.domain.Trade;
 import com.example.events.TradeExecutedEvent;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +34,13 @@ public class OrderRecoveryService {
 
     UUID buyId = event.getBuyOrderId();
     UUID sellId = event.getSellOrderId();
-    Trade trade = TradeEventMapper.fromEvent(event);
+    //Trade trade = TradeEventMapper.fromEvent(event);
 
     Optional<Order> buyOrderOpt = Optional.ofNullable(orderBook.getReservedOrder(buyId));
 
     if (buyOrderOpt.isEmpty()) {
       buyOrderOpt = Optional.ofNullable(
-              Optional.ofNullable(orderBook.getBuyBook().get(trade.getPrice()))
+              Optional.ofNullable(orderBook.getBuyBook().get(event.getPrice()))
                       .flatMap(dateMap -> Optional.ofNullable(dateMap.get(event.getBuyOrderDate())))
                       .flatMap(list -> list.stream()
                               .filter(order -> order.getOrderID().equals(buyId))
@@ -54,7 +53,7 @@ public class OrderRecoveryService {
 
     if (sellOrderOpt.isEmpty()) {
       sellOrderOpt = Optional.ofNullable(
-              Optional.ofNullable(orderBook.getSellBook().get(trade.getPrice()))
+              Optional.ofNullable(orderBook.getSellBook().get(event.getPrice()))
                       .flatMap(dateMap -> Optional.ofNullable(dateMap.get(event.getSellOrderDate())))
                       .flatMap(list -> list.stream()
                               .filter(order -> order.getOrderID().equals(sellId))
@@ -68,8 +67,8 @@ public class OrderRecoveryService {
     Order sellOrder = sellOrderOpt.orElseThrow(() ->
             new IllegalStateException("Sell order not found for rollback: " + sellId));
 
-    rollBack(buyOrder, trade, orderBook);
-    rollBack(sellOrder, trade, orderBook);
+    rollBack(buyOrder, event, orderBook);
+    rollBack(sellOrder, event, orderBook);
     event.setRollbackApplied(true);
   }
 
@@ -98,12 +97,12 @@ public class OrderRecoveryService {
   }
 
 
-  private void rollBack(Order order, Trade trade, OrderBook orderBook) {
+  private void rollBack(Order order, TradeExecutedEvent event, OrderBook orderBook) {
     if (!ROLLBACK_ELIGIBLE_STATUSES.contains(order.getStatus())) {
       throw new IllegalStateException("Cannot roll-back order: not in RESERVED or READY FOR MATCHING state");
     }
 
-    order.setQuantity(order.getQuantity() + trade.getQuantity());
+    order.setQuantity(order.getQuantity() + event.getQuantity());
     order.setStatus(OrderStatus.ACTIVE);
     orderBook.addOrder(order);
   }

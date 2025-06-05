@@ -1,7 +1,7 @@
 package com.example.OrderMatchingService.domain.matching;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.events.TradeCreatedEvent;
+import com.example.events.OrderMatchedEvent;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class PriceTimePriorityStrategy implements MatchingStrategy{
 
   @Override
-    public List<TradeCreatedEvent> match(Order order, OrderBook orderBook) {
-        List<TradeCreatedEvent> tradeEvents = new ArrayList<>();
+    public List<OrderMatchedEvent> match(Order order, OrderBook orderBook) {
+        List<OrderMatchedEvent> tradeEvents = new ArrayList<>();
 
         while (canMatch(order, orderBook)) {
             BigDecimal bestPrice = orderBook.getBestPrice(order);
@@ -26,10 +26,10 @@ public class PriceTimePriorityStrategy implements MatchingStrategy{
             Order buyOrder = order.isBuyOrder() ? order : match;
             Order sellOrder = order.isSellOrder() ? order : match;
 
-            Trade trade = Trade.createNew(buyOrder.getUserId(), sellOrder.getUserId(), buyOrder.getOrderID(),
-              sellOrder.getOrderID(), order.getTickerName(), tradedQty, bestPrice);
-
-            tradeEvents.add(new TradeCreatedEvent(trade, buyOrder, sellOrder));
+            OrderMatchedEvent orderMatchedEvent = new OrderMatchedEvent(buyOrder.getOrderID(), sellOrder.getOrderID(),
+              buyOrder.getTickerName(), bestPrice, tradedQty, buyOrder.getUserId(), sellOrder.getUserId(),
+              buyOrder.getCreatedAt(), sellOrder.getCreatedAt());
+            tradeEvents.add(orderMatchedEvent);
 
             if (match.getQuantity() == 0) {
                 match.setStatus(OrderStatus.RESERVED);

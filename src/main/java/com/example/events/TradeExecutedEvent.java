@@ -1,7 +1,5 @@
 package com.example.events;
 
-import com.example.OrderMatchingService.domain.TradeFailureReason;
-import com.example.OrderMatchingService.domain.TradeStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 public class TradeExecutedEvent extends AbstractEvent{
 
+    private final UUID tradeId;
     private final TradeStatus status;
     private boolean rollbackApplied = false;
     private List<TradeFailureReason> failureReasons = TradeFailureReason.getEmptyFailureList();
@@ -37,7 +36,8 @@ public class TradeExecutedEvent extends AbstractEvent{
             TradeStatus status,
             List<TradeFailureReason> failureReasons
     ) {
-        super(tradeId, buyOrderId, sellOrderId, tickerName, price, quantity, buyUserId, sellUserId, buyOrderDate, sellOrderDate);
+        super(buyOrderId, sellOrderId, tickerName, price, quantity, buyUserId, sellUserId, buyOrderDate, sellOrderDate);
+        this.tradeId = tradeId;
         this.status = status;
         this.failureReasons = failureReasons;
     }

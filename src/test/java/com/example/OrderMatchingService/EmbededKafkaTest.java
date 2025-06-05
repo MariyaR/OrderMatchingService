@@ -1,7 +1,5 @@
 package com.example.OrderMatchingService;
 
-import com.example.events.OrderMatchedEvent;
-import com.example.OrderMatchingService.service.OrderEventConsumerService;
 import com.example.OrderMatchingService.service.OrderEventPublisher;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;

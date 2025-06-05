@@ -1,8 +1,9 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.events.TradeCreatedEvent;
+import com.example.events.OrderMatchedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
+import com.example.events.TradeExecutedEvent;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,7 +26,7 @@ public class OrderMatcher {
         this.orderBook = orderBook;
     }
 
-    public List<TradeCreatedEvent> match(Order order) {
+    public List<OrderMatchedEvent> match(Order order) {
 
         if (!order.getTickerName().equals(ticker)) {
             throw new IllegalArgumentException("wrong ticker name");
@@ -34,9 +35,9 @@ public class OrderMatcher {
         long startTime = System.nanoTime();
 
         order.setStatus(OrderStatus.ACTIVE);
-        List<TradeCreatedEvent> tradeEvents;
+        List<OrderMatchedEvent> tradeEvents;
         tradeEvents = matchingStrategy.match(order, orderBook);
-        tradeEvents.forEach(event -> process(TradeEventMapper.fromEvent(event)));
+        tradeEvents.forEach(this::process);
 
         if (order.getQuantity() > 0) {
           orderBook.addOrder(order);
@@ -53,8 +54,8 @@ public class OrderMatcher {
 
     }
 
-    private void process(Trade trade) {
-        totalMatchedVolume.addAndGet(trade.getQuantity());
+    private void process(OrderMatchedEvent event) {
+        totalMatchedVolume.addAndGet(event.getQuantity());
         totalTradeCount.incrementAndGet();
     }
     private void recordLatency(long latencyMicros) {

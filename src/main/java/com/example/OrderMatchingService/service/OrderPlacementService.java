@@ -2,13 +2,9 @@ package com.example.OrderMatchingService.service;
 
 
 import com.example.OrderMatchingService.domain.Order;
-import com.example.OrderMatchingService.domain.Trade;
-import com.example.OrderMatchingService.dto.OrderDto;
 import com.example.OrderMatchingService.repository.OrderRepository;
-import com.example.OrderMatchingService.repository.TradeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,11 +12,9 @@ import java.util.UUID;
 public class OrderPlacementService {
 
   private final OrderRepository orderRepository;
-  private final OrderMapper orderMapper;
 
-  public OrderPlacementService(OrderRepository orderRepository, OrderMapper orderMapper) {
+  public OrderPlacementService(OrderRepository orderRepository) {
     this.orderRepository = orderRepository;
-    this.orderMapper = orderMapper;
   }
 
   public boolean isValid(Order order) {

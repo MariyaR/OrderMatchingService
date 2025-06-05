@@ -18,7 +18,6 @@ import java.util.UUID;
 public abstract class AbstractEvent implements DomainEvent {
 
     private final UUID eventId = UUID.randomUUID();
-    private final UUID tradeId;
     private final UUID buyOrderId;
     private final UUID sellOrderId;
     private final String tickerName;

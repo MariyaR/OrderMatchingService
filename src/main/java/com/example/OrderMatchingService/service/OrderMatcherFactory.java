@@ -10,13 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class OrderMatcherFactory {
 
-  private final OrderBookManager orderBookManager;
   private final MatchingStrategy matchingStrategy;
   private final Map<String, OrderMatcher> matchers = new ConcurrentHashMap<>();
   private final OrderBookFactory orderBookFactory;
 
-  public OrderMatcherFactory(OrderBookManager orderBookManager, MatchingStrategy matchingStrategy, OrderBookFactory orderBookFactory) {
-    this.orderBookManager = orderBookManager;
+  public OrderMatcherFactory(MatchingStrategy matchingStrategy, OrderBookFactory orderBookFactory) {
     this.matchingStrategy = matchingStrategy;
     this.orderBookFactory = orderBookFactory;
   }

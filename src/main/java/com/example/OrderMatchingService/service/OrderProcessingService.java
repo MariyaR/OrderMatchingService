@@ -1,8 +1,7 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
-import com.example.OrderMatchingService.domain.Trade;
-import com.example.events.TradeCreatedEvent;
+import com.example.events.OrderMatchedEvent;
 import com.example.OrderMatchingService.dto.OrderDto;
 import org.springframework.stereotype.Service;
 
@@ -14,35 +13,27 @@ public class OrderProcessingService {
     private final OrderMapper orderMapper;
     private final OrderPlacementService orderPlacementService;
     private final OrderMatchingService orderMatchingService;
-    private final TradePlacementService tradePlacementService;
-    private final OrderEventPublisher orderEventPublisher;
-    private final TradeEventPublisher tradeEventPublisher;
+    private final OrderMatchedPublisher orderMatchedPublisher;
 
     public OrderProcessingService(
             OrderMapper orderMapper,
             OrderPlacementService orderPlacementService,
             OrderMatchingService orderMatchingService,
-            TradePlacementService tradePlacementService,
-            OrderEventPublisher orderEventPublisher,
-            TradeEventPublisher tradeEventPublisher
+            OrderMatchedPublisher tradeEventPublisher
     ) {
         this.orderMapper = orderMapper;
         this.orderPlacementService = orderPlacementService;
         this.orderMatchingService = orderMatchingService;
-        this.tradePlacementService = tradePlacementService;
-        this.orderEventPublisher = orderEventPublisher;
-        this.tradeEventPublisher = tradeEventPublisher;
+        this.orderMatchedPublisher = tradeEventPublisher;
     }
 
     public void process(OrderDto orderDto) {
         Order newOrder = orderMapper.mapToOrer(orderDto);
         orderPlacementService.placeOrder(newOrder);
 
-        List<TradeCreatedEvent> tradeEvents = orderMatchingService.match(newOrder);
-        for (TradeCreatedEvent tradeEvent : tradeEvents) {
-            Trade trade = TradeEventMapper.fromEvent(tradeEvent);
-            tradePlacementService.placeTrade(trade);
-            tradeEventPublisher.publishTradeCreated(tradeEvent);
+        List<OrderMatchedEvent> orderMatchedEvents = orderMatchingService.match(newOrder);
+        for (OrderMatchedEvent event : orderMatchedEvents) {
+            orderMatchedPublisher.publishOrderMatched(event);
         }
     }
 }

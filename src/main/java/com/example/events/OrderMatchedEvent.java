@@ -1,30 +1,24 @@
 package com.example.events;
 
-import lombok.AllArgsConstructor;
+import com.example.OrderMatchingService.domain.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor(force = true)
-@AllArgsConstructor
+public class OrderMatchedEvent extends AbstractEvent{
 
-public class OrderMatchedEvent implements DomainEvent {
-
-    private UUID matchId;
-    private UUID buyOrderId;
-    private UUID sellOrderId;
-    private final String ticker;
-    private final int quantity;
-    private final long price;
-    private final LocalDateTime createdAt;
-
-    @Override
-    public LocalDateTime createdAt() {
-        return createdAt;
-    }
+  public OrderMatchedEvent(UUID buyOrderId, UUID sellOrderId, String tickerName,
+                           BigDecimal price, Long quantity, UUID buyUserId, UUID sellUserId,
+                           LocalDateTime buyOrderDate, LocalDateTime sellOrderDate) {
+    super( buyOrderId, sellOrderId, tickerName, price, quantity, buyUserId, sellUserId,
+            buyOrderDate, sellOrderDate);
+  }
 
 }

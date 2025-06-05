@@ -1,12 +1,11 @@
 package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.*;
-import com.example.events.TradeCreatedEvent;
+import com.example.events.OrderMatchedEvent;
 import com.example.OrderMatchingService.domain.matching.MatchingStrategy;
 import com.example.OrderMatchingService.domain.matching.PriceTimePriorityStrategy;
 import com.example.OrderMatchingService.service.OrderBookFactory;
 import com.example.OrderMatchingService.service.OrderMatcher;
-import com.example.OrderMatchingService.service.TradeEventMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,7 @@ class OrderMatchingServiceTests {
 		orderMatcher.match(sellOrder);
 
 		Order buyOrder = TestOrderFactory.buy(TICKER, 100L, new BigDecimal(150));
-		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(buyOrder);
+		List<OrderMatchedEvent> tradeEvents = orderMatcher.match(buyOrder);
 
 		assertEquals(1, tradeEvents.size());
 		assertTradeEvent(tradeEvents.get(0), buyOrder.getUserId(), sellOrder.getUserId(), new BigDecimal(150), 100);
@@ -54,7 +53,7 @@ class OrderMatchingServiceTests {
 		orderMatcher.match(buyOrder);
 
 		Order sellOrder = TestOrderFactory.sell(TICKER, 50L, new BigDecimal(200));
-		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(sellOrder);
+		List<OrderMatchedEvent> tradeEvents = orderMatcher.match(sellOrder);
 
 		assertEquals(1, tradeEvents.size());
 		assertTradeEvent(tradeEvents.get(0), buyOrder.getUserId(), sellOrder.getUserId(), new BigDecimal(200), 50);
@@ -67,7 +66,7 @@ class OrderMatchingServiceTests {
 		orderMatcher.match(sellOrder);
 
 		Order buyOrder = TestOrderFactory.buy(TICKER, 50L, new BigDecimal(70));
-		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(buyOrder);
+		List<OrderMatchedEvent> tradeEvents = orderMatcher.match(buyOrder);
 		assertEquals(1, tradeEvents.size());
 		assertEquals(50, tradeEvents.get(0).getQuantity());
 
@@ -84,7 +83,7 @@ class OrderMatchingServiceTests {
 	@Test
 	void givenBuyPriceBelowSellPrice_thenNoMatch() {
 		orderMatcher.match(TestOrderFactory.sell(TICKER, 50L, new BigDecimal(210)));
-		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(TestOrderFactory.buy(TICKER, 50L, new BigDecimal(200)));
+		List<OrderMatchedEvent> tradeEvents = orderMatcher.match(TestOrderFactory.buy(TICKER, 50L, new BigDecimal(200)));
 		assertTrue(tradeEvents.isEmpty());
 	}
 
@@ -145,7 +144,7 @@ class OrderMatchingServiceTests {
 	@Test
 	void whenNoTrade_thenOrderInBook() {
 		Order buyOrder = TestOrderFactory.buy(TICKER, 100L, new BigDecimal(500));
-		List<TradeCreatedEvent> tradeEvents = orderMatcher.match(buyOrder);
+		List<OrderMatchedEvent> tradeEvents = orderMatcher.match(buyOrder);
 		assertTrue(tradeEvents.isEmpty());
 		assertEquals(OrderStatus.ACTIVE, buyOrder.getStatus());
 		assertEquals(orderBookFactory.getOrCreate(TICKER).getBuyBook().get(buyOrder.getPrice()).get(buyOrder.getCreatedAt()).get(0).getOrderID(), buyOrder.getOrderID());
@@ -157,7 +156,7 @@ class OrderMatchingServiceTests {
 		assertTrue(orderMatcher.getAverageLatencyMicros() >= 0);
 	}
 
-	private void assertTradeEvent(TradeCreatedEvent trade, UUID buyId, UUID sellId, BigDecimal price, int quantity) {
+	private void assertTradeEvent(OrderMatchedEvent trade, UUID buyId, UUID sellId, BigDecimal price, int quantity) {
 		assertEquals(buyId, trade.getBuyUserId());
 		assertEquals(sellId, trade.getSellUserId());
 		assertEquals(price, trade.getPrice());
