@@ -11,15 +11,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import static com.example.events.TradeStatus.CONFIRMED;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestPropertySource(properties = {
+  "spring.datasource.url=jdbc:postgresql://localhost:5432/trade_db",
+  "spring.datasource.username=adminTraider",
+  "spring.datasource.password=adminTraider",
+  "spring.jpa.properties.hibernate.default_schema=order_matching",
+  "spring.jpa.hibernate.ddl-auto=update",
+  "spring.datasource.driver-class-name=org.postgresql.Driver",
+  "spring.flyway.schemas=order_matching"
+})
 public class IntegrationTest {
 
   private static final String TICKER = "ticker";
@@ -71,8 +84,16 @@ public class IntegrationTest {
   void givenBuyOrder_whenMatchesSellOrder_thenTradeIsCreated() {
       orderProcessingService.process(buyOrder);
       orderProcessingService.process(sellOrder);
+    await()
+      .atMost(5, TimeUnit.SECONDS)
+      .until(() -> orderRepository.findAll().size() == 2);
+
 
     List<Order> savedOrders = orderRepository.findAll();
+
+    await()
+      .atMost(5, TimeUnit.SECONDS)
+      .until(() -> orderRepository.findAll().size() == 2);
 
     assertFalse(savedOrders.isEmpty());
 
