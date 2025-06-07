@@ -66,8 +66,8 @@ public class OrderBook {
     reservedOrders.remove(order.getOrderID());
   }
 
-  public Order getReservedOrder(UUID orderId) {
-    return reservedOrders.get(orderId);
+  public Optional<Order> getReservedOrder(UUID orderId) {
+    return Optional.ofNullable(reservedOrders.get(orderId));
   }
 
   public ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> getBuyBook() {

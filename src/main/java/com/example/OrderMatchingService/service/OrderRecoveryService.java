@@ -36,7 +36,7 @@ public class OrderRecoveryService {
     UUID sellId = event.getSellOrderId();
     //Trade trade = TradeEventMapper.fromEvent(event);
 
-    Optional<Order> buyOrderOpt = Optional.ofNullable(orderBook.getReservedOrder(buyId));
+    Optional<Order> buyOrderOpt = orderBook.getReservedOrder(buyId);
 
     if (buyOrderOpt.isEmpty()) {
       buyOrderOpt = Optional.ofNullable(
@@ -49,7 +49,7 @@ public class OrderRecoveryService {
       );
     }
 
-    Optional<Order> sellOrderOpt = Optional.ofNullable(orderBook.getReservedOrder(sellId));
+    Optional<Order> sellOrderOpt = orderBook.getReservedOrder(sellId);
 
     if (sellOrderOpt.isEmpty()) {
       sellOrderOpt = Optional.ofNullable(
@@ -75,25 +75,28 @@ public class OrderRecoveryService {
   public void finalize(TradeExecutedEvent event) {
     OrderBook orderBook = orderBookFactory.getOrCreate(event.getTickerName());
 
-    Order buyOrder = getReservedOrderOrThrow(orderBook, event.getBuyOrderId());
-    Order sellOrder = getReservedOrderOrThrow(orderBook, event.getSellOrderId());
-
-    completeOrder(orderBook, buyOrder);
-    completeOrder(orderBook, sellOrder);
+    finalizeOrder(orderBook, event.getBuyOrderId());
+    finalizeOrder(orderBook, event.getSellOrderId());
   }
 
-  private Order getReservedOrderOrThrow(OrderBook orderBook, UUID orderId) {
-    Order order = orderBook.getReservedOrder(orderId);
-    if (order == null || order.getStatus() != OrderStatus.RESERVED) {
+  private void finalizeOrder(OrderBook orderBook, UUID orderId) {
+    orderBook.getReservedOrder(orderId)
+      .map(this::validateReservedOrder)
+      .ifPresent(order -> completeOrder(orderBook, order));
+  }
+
+  private Order validateReservedOrder(Order order) {
+    if (order.getStatus() != OrderStatus.RESERVED) {
       throw new IllegalStateException("Cannot finalize order: not in RESERVED state");
     }
     return order;
   }
 
+
   private void completeOrder(OrderBook orderBook, Order order) {
     orderBook.removeFromReserved(order);
     order.setStatus(OrderStatus.COMPLETED);
-    orderPlacementService.placeOrder(order);
+    orderPlacementService.save(order);
   }
 
 

@@ -39,6 +39,7 @@ public class OrderMatcher {
         tradeEvents = matchingStrategy.match(order, orderBook);
         tradeEvents.forEach(this::process);
 
+        //todo update order state in base
         if (order.getQuantity() > 0) {
           orderBook.addOrder(order);
         } else if (!tradeEvents.isEmpty()) {
