@@ -1,6 +1,7 @@
 package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.service.OrderEventPublisher;
+import com.example.events.OrderMatchedEvent;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext
 @EmbeddedKafka(partitions = 1)
 public class EmbededKafkaTest {
-
+//
 //    @Autowired
 //    OrderEventConsumerService kafkaConsumerService;
 //
