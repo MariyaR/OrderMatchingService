@@ -9,8 +9,8 @@ services:
       POSTGRES_DB: trade_db
     ports:
       - "5432:5432"
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
       - mynetwork
 
@@ -30,16 +30,16 @@ services:
     ports:
       - "9092:9092"
       - "9093:9093"
-    volumes:
-      - kafka_data:/bitnami/kafka
+#    volumes:
+#      - kafka_data:/bitnami/kafka
     networks:
       - mynetwork
 
-  app:
+  order-matching-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: springboot-app
+    container_name: order-matching-service
     ports:
       - "8080:8080"
     environment:
@@ -53,6 +53,24 @@ services:
       - kafka
       - postgres
     restart: always
+
+  trade-execution-service:
+    build:
+      context: ../tradeExecutedSerivce
+      dockerfile: Dockerfile
+    container_name: trade-execution-service
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trade_db
+      SPRING_DATASOURCE_USERNAME: adminTraider
+      SPRING_DATASOURCE_PASSWORD: adminTraider
+    networks:
+      - mynetwork
+    depends_on:
+      - kafka
+      - postgres
 
 volumes:
   kafka_data:

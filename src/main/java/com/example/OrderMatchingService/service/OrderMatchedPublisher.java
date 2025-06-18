@@ -18,6 +18,6 @@ public class OrderMatchedPublisher {
     }
 
     public void publishOrderMatched(OrderMatchedEvent tradeEvent) {
-        kafkaTemplate.send(tradeCreatedTopic, tradeEvent);
+      kafkaTemplate.send(tradeCreatedTopic, tradeEvent);
     }
 }

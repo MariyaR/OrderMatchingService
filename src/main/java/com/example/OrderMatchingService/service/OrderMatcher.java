@@ -34,7 +34,6 @@ public class OrderMatcher {
 
         long startTime = System.nanoTime();
 
-        order.setStatus(OrderStatus.ACTIVE);
         List<OrderMatchedEvent> tradeEvents;
         tradeEvents = matchingStrategy.match(order, orderBook);
         tradeEvents.forEach(this::process);

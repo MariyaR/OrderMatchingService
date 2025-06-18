@@ -20,7 +20,7 @@ public class OrderMapper {
       .quantity(dto.getQuantity())
       .price(dto.getPrice())
       .createdAt(dto.getCreatedAt())
-      .status(OrderStatus.CREATED)
+      .status(OrderStatus.ACTIVE)
       .build();
   }
 

@@ -34,32 +34,25 @@ public class OrderRecoveryService {
 
     UUID buyId = event.getBuyOrderId();
     UUID sellId = event.getSellOrderId();
-    //Trade trade = TradeEventMapper.fromEvent(event);
 
     Optional<Order> buyOrderOpt = orderBook.getReservedOrder(buyId);
 
     if (buyOrderOpt.isEmpty()) {
-      buyOrderOpt = Optional.ofNullable(
-              Optional.ofNullable(orderBook.getBuyBook().get(event.getPrice()))
-                      .flatMap(dateMap -> Optional.ofNullable(dateMap.get(event.getBuyOrderDate())))
-                      .flatMap(list -> list.stream()
-                              .filter(order -> order.getOrderID().equals(buyId))
-                              .findFirst())
-                      .orElse(null)
-      );
+      buyOrderOpt = Optional.ofNullable(orderBook.getBuyBook().get(event.getPrice()))
+              .flatMap(dateMap -> Optional.ofNullable(dateMap.get(event.getBuyOrderDate())))
+              .flatMap(list -> list.stream()
+                      .filter(order -> order.getOrderID().equals(buyId))
+                      .findFirst());
     }
 
     Optional<Order> sellOrderOpt = orderBook.getReservedOrder(sellId);
 
     if (sellOrderOpt.isEmpty()) {
-      sellOrderOpt = Optional.ofNullable(
-              Optional.ofNullable(orderBook.getSellBook().get(event.getPrice()))
-                      .flatMap(dateMap -> Optional.ofNullable(dateMap.get(event.getSellOrderDate())))
-                      .flatMap(list -> list.stream()
-                              .filter(order -> order.getOrderID().equals(sellId))
-                              .findFirst())
-                      .orElse(null)
-      );
+      sellOrderOpt = Optional.ofNullable(orderBook.getSellBook().get(event.getPrice()))
+              .flatMap(dateMap -> Optional.ofNullable(dateMap.get(event.getSellOrderDate())))
+              .flatMap(list -> list.stream()
+                      .filter(order -> order.getOrderID().equals(sellId))
+                      .findFirst());
     }
 
     Order buyOrder = buyOrderOpt.orElseThrow(() ->
