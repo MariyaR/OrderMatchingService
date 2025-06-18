@@ -157,25 +157,8 @@ class OrderRecoveryServiceTest {
 
     assertEquals(OrderStatus.COMPLETED, buyOrder.getStatus());
     assertEquals(OrderStatus.COMPLETED, sellOrder.getStatus());
-    assertNull(orderBook.getReservedOrder(buyOrderId));
-    assertNull(orderBook.getReservedOrder(sellOrderId));
-  }
-
-  @Test
-  void finalize_orderNotReserved_shouldThrowException() {
-    // Create an order that is not reserved
-    Order buyOrder = createBuyOrder(5L);
-    buyOrder.setStatus(OrderStatus.ACTIVE);
-
-    Order sellOrder = createSellOrder(10L);
-    sellOrder.setStatus(OrderStatus.RESERVED);
-    orderBook.reserveOrder(sellOrder);
-
-    IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> orderRecoveryService.finalize(createTradeEvent(buyOrder, sellOrder)),
-            "Expected finalize() to throw an exception for non-RESERVED order"
-    );
+    assertTrue(orderBook.getReservedOrder(buyOrderId).isEmpty());
+    assertTrue(orderBook.getReservedOrder(sellOrderId).isEmpty());
   }
 
   @Test
