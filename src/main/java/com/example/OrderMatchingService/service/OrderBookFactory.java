@@ -1,11 +1,13 @@
 package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.OrderBook;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 @Component
 public class OrderBookFactory {
 

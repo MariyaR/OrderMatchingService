@@ -3,15 +3,13 @@ package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.domain.OrderStatus;
-import com.example.OrderMatchingService.dto.OrderDto;
+import com.example.OrderMatchingService.dto.OrderDtoIn;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class OrderMapper {
 
-  public Order mapToOrer (OrderDto dto) {
+  public Order mapToOrer (OrderDtoIn dto) {
     return Order.builder()
       .orderID(null)
       .userId(dto.getUserId())
@@ -24,8 +22,8 @@ public class OrderMapper {
       .build();
   }
 
-  public OrderDto mapToDto(Order order) {
-    return OrderDto.builder()
+  public OrderDtoIn mapToDto(Order order) {
+    return OrderDtoIn.builder()
       .userId(order.getUserId())
       .operationType(order.getOperationType())
       .tickerName(order.getTickerName())

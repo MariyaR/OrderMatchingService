@@ -2,7 +2,7 @@ package com.example.OrderMatchingService;
 
 import com.example.OrderMatchingService.domain.OperationType;
 import com.example.OrderMatchingService.domain.Order;
-import com.example.OrderMatchingService.dto.OrderDto;
+import com.example.OrderMatchingService.dto.OrderDtoIn;
 import com.example.OrderMatchingService.repository.OrderRepository;
 import com.example.OrderMatchingService.service.OrderProcessingService;
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.example.events.TradeStatus.CONFIRMED;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,8 +41,8 @@ public class IntegrationTest {
   @Autowired
   private OrderProcessingService orderProcessingService;
 
-  private OrderDto buyOrder;
-  private OrderDto sellOrder;
+  private OrderDtoIn buyOrder;
+  private OrderDtoIn sellOrder;
 
   @Value("${test.buyOrder.account}")
   private String buyOrderAccount;
@@ -54,7 +53,7 @@ public class IntegrationTest {
 
   @BeforeEach
   public void setUp() {
-     buyOrder = OrderDto.builder()
+     buyOrder = OrderDtoIn.builder()
       .userId(UUID.fromString(buyOrderAccount))
       .operationType(OperationType.BUY)
       .tickerName(TICKER)
@@ -63,7 +62,7 @@ public class IntegrationTest {
       .createdAt(LocalDateTime.now())
       .build();
 
-     sellOrder = OrderDto.builder()
+     sellOrder = OrderDtoIn.builder()
       .userId(UUID.fromString(sellOrderAccount))
       .operationType(OperationType.SELL)
       .tickerName(TICKER)

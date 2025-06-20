@@ -1,5 +1,7 @@
 package com.example.OrderMatchingService.domain;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -7,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 
+@Getter
 public class OrderBook {
 
   private final ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> buyBook = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
@@ -70,11 +73,4 @@ public class OrderBook {
     return Optional.ofNullable(reservedOrders.get(orderId));
   }
 
-  public ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> getBuyBook() {
-    return buyBook;
-  }
-
-  public ConcurrentSkipListMap<BigDecimal, ConcurrentSkipListMap<LocalDateTime, List<Order>>> getSellBook() {
-    return sellBook;
-  }
 }

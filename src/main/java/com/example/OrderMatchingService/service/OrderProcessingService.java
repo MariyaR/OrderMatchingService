@@ -2,7 +2,7 @@ package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
 import com.example.events.OrderMatchedEvent;
-import com.example.OrderMatchingService.dto.OrderDto;
+import com.example.OrderMatchingService.dto.OrderDtoIn;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +27,8 @@ public class OrderProcessingService {
         this.orderMatchedPublisher = tradeEventPublisher;
     }
 
-    public void process(OrderDto orderDto) {
-        Order newOrder = orderMapper.mapToOrer(orderDto);
+    public void process(OrderDtoIn orderDtoIn) {
+        Order newOrder = orderMapper.mapToOrer(orderDtoIn);
         orderPlacementService.placeOrder(newOrder);
 
         List<OrderMatchedEvent> orderMatchedEvents = orderMatchingService.match(newOrder);

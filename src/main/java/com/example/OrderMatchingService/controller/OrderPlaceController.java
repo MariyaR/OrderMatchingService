@@ -1,9 +1,7 @@
 package com.example.OrderMatchingService.controller;
 
 
-import com.example.OrderMatchingService.domain.Order;
-import com.example.OrderMatchingService.dto.OrderDto;
-import com.example.OrderMatchingService.service.OrderPlacementService;
+import com.example.OrderMatchingService.dto.OrderDtoIn;
 import com.example.OrderMatchingService.service.OrderProcessingService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +16,8 @@ public class OrderPlaceController {
   }
 
   @PostMapping
-  public void placeOrder(@RequestBody OrderDto orderDto) {
-    orderProcessingService.process(orderDto);
+  public void placeOrder(@RequestBody OrderDtoIn orderDtoIn) {
+    orderProcessingService.process(orderDtoIn);
   }
 
 }
