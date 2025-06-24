@@ -22,16 +22,16 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@TestPropertySource(properties = {
-  "spring.datasource.url=jdbc:postgresql://localhost:5432/trade_db",
-  "spring.datasource.username=adminTraider",
-  "spring.datasource.password=adminTraider",
-  "spring.jpa.properties.hibernate.default_schema=order_matching",
-  "spring.jpa.hibernate.ddl-auto=update",
-  "spring.datasource.driver-class-name=org.postgresql.Driver",
-  "spring.flyway.schemas=order_matching"
-})
+//@SpringBootTest
+//@TestPropertySource(properties = {
+//  "spring.datasource.url=jdbc:postgresql://localhost:5432/trade_db",
+//  "spring.datasource.username=adminTraider",
+//  "spring.datasource.password=adminTraider",
+//  "spring.jpa.properties.hibernate.default_schema=order_matching",
+//  "spring.jpa.hibernate.ddl-auto=update",
+//  "spring.datasource.driver-class-name=org.postgresql.Driver",
+//  "spring.flyway.schemas=order_matching"
+//})
 public class IntegrationTest {
 
 //  private static final String TICKER = "ticker";
