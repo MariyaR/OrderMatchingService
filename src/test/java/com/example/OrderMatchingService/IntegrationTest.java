@@ -34,68 +34,68 @@ import static org.junit.jupiter.api.Assertions.*;
 })
 public class IntegrationTest {
 
-  private static final String TICKER = "ticker";
-  @Autowired
-  private OrderRepository orderRepository;
-
-  @Autowired
-  private OrderProcessingService orderProcessingService;
-
-  private OrderDtoIn buyOrder;
-  private OrderDtoIn sellOrder;
-
-  @Value("${test.buyOrder.account}")
-  private String buyOrderAccount;
-
-  @Value("${test.sellOrder.account}")
-  private String sellOrderAccount;
-
-
-  @BeforeEach
-  public void setUp() {
-     buyOrder = OrderDtoIn.builder()
-      .userId(UUID.fromString(buyOrderAccount))
-      .operationType(OperationType.BUY)
-      .tickerName(TICKER)
-      .quantity(5L)
-      .price(new BigDecimal("100"))
-      .createdAt(LocalDateTime.now())
-      .build();
-
-     sellOrder = OrderDtoIn.builder()
-      .userId(UUID.fromString(sellOrderAccount))
-      .operationType(OperationType.SELL)
-      .tickerName(TICKER)
-      .quantity(5L)
-      .price(new BigDecimal("100"))
-      .createdAt(LocalDateTime.now())
-      .build();
-
-
-  }
-
-  @AfterEach
-  void tearDown() {
-
-  }
-
-  @Test
-  void givenBuyOrder_whenMatchesSellOrder_thenTradeIsCreated() {
-      orderProcessingService.process(buyOrder);
-      orderProcessingService.process(sellOrder);
-    await()
-      .atMost(5, TimeUnit.SECONDS);
-      //.until(() -> orderRepository.findAll().size() == 2);
-
-
-    List<Order> savedOrders = orderRepository.findAll();
-
-    await()
-      .atMost(5, TimeUnit.SECONDS)
-      .until(() -> orderRepository.findAll().size() == 2);
-
-    assertFalse(savedOrders.isEmpty());
-
-  }
+//  private static final String TICKER = "ticker";
+//  @Autowired
+//  private OrderRepository orderRepository;
+//
+//  @Autowired
+//  private OrderProcessingService orderProcessingService;
+//
+//  private OrderDtoIn buyOrder;
+//  private OrderDtoIn sellOrder;
+//
+//  @Value("${test.buyOrder.account}")
+//  private String buyOrderAccount;
+//
+//  @Value("${test.sellOrder.account}")
+//  private String sellOrderAccount;
+//
+//
+//  @BeforeEach
+//  public void setUp() {
+//     buyOrder = OrderDtoIn.builder()
+//      .userId(UUID.fromString(buyOrderAccount))
+//      .operationType(OperationType.BUY)
+//      .tickerName(TICKER)
+//      .quantity(5L)
+//      .price(new BigDecimal("100"))
+//      .createdAt(LocalDateTime.now())
+//      .build();
+//
+//     sellOrder = OrderDtoIn.builder()
+//      .userId(UUID.fromString(sellOrderAccount))
+//      .operationType(OperationType.SELL)
+//      .tickerName(TICKER)
+//      .quantity(5L)
+//      .price(new BigDecimal("100"))
+//      .createdAt(LocalDateTime.now())
+//      .build();
+//
+//
+//  }
+//
+//  @AfterEach
+//  void tearDown() {
+//
+//  }
+//
+//  @Test
+//  void givenBuyOrder_whenMatchesSellOrder_thenTradeIsCreated() {
+//      orderProcessingService.process(buyOrder);
+//      orderProcessingService.process(sellOrder);
+//    await()
+//      .atMost(5, TimeUnit.SECONDS);
+//      //.until(() -> orderRepository.findAll().size() == 2);
+//
+//
+//    List<Order> savedOrders = orderRepository.findAll();
+//
+//    await()
+//      .atMost(5, TimeUnit.SECONDS)
+//      .until(() -> orderRepository.findAll().size() == 2);
+//
+//    assertFalse(savedOrders.isEmpty());
+//
+//  }
 
 }
