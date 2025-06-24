@@ -56,7 +56,7 @@ services:
 
   trade-execution-service:
     build:
-      context: ../tradeExecutedSerivce
+      context: ../tradeExecutedService
       dockerfile: Dockerfile
     container_name: trade-execution-service
     ports:

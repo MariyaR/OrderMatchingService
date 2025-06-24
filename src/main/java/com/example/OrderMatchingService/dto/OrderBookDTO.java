@@ -1,6 +1,5 @@
 package com.example.OrderMatchingService.dto;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +8,6 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderBookDTO {
     private List<OrderDtoOut> buyOrders;
-    private List<OrderDtoOut> sellOders;
+    private List<OrderDtoOut> sellOrders;
 
 }

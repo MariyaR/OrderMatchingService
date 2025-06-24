@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/placeOrder")
+@CrossOrigin(origins = "http://localhost:4200")
 public class OrderPlaceController {
 
   private OrderProcessingService orderProcessingService;
@@ -17,6 +18,7 @@ public class OrderPlaceController {
 
   @PostMapping
   public void placeOrder(@RequestBody OrderDtoIn orderDtoIn) {
+
     orderProcessingService.process(orderDtoIn);
   }
 
