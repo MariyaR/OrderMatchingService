@@ -36,6 +36,7 @@ jobs:
         IMAGE_TAG: latest
         AWS_REGION: eu-central-1
       run: |
+        mvn package -DskipTests
         IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
         docker build -t $IMAGE_URI .
         docker push $IMAGE_URI
