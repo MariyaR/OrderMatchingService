@@ -2,7 +2,14 @@ name: Build and Push to ECR
 
 on:
   push:
-    branches: [ "main" ]  # или другая ветка
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+permissions:
+  contents: read
+  security-events: write
+  actions: write    
 
 jobs:
   deploy:
