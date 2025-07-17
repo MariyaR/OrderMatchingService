@@ -57,7 +57,7 @@ jobs:
           export IMAGE_TAG=${{ steps.build-image.outputs.tag }}
           echo "Deploying image with tag: $IMAGE_TAG"
           cd /home/ec2-user
-          aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.eu-north-1.amazonaws.com
+          aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 642902937286.dkr.ecr.eu-north-1.amazonaws.com
           docker-compose -f /home/ec2-user/docker-compose.server.yml pull order-matching-service
           docker-compose -f /home/ec2-user/docker-compose.server.yml up -d
     
