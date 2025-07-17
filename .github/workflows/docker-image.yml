@@ -45,10 +45,10 @@ jobs:
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
+        username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /home/ubuntu/app
+          cd /home/ec2-user/app
           aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.eu-north-1.amazonaws.com
           docker-compose -f /home/ubuntu/app/docker-compose.server.yml pull order-matching-service
           docker-compose -f /home/ubuntu/app/docker-compose.server.yml up -d
