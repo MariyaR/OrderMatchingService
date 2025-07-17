@@ -46,15 +46,16 @@ jobs:
         echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Deploy to EC2
+      env:
+          IMAGE_TAG: ${{ steps.build-image.outputs.tag }}
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
-      env:
-        IMAGE_TAG: ${{ steps.build-image.outputs.tag }}
         script: |
           export IMAGE_TAG=$IMAGE_TAG
+          echo "Deploying image with tag: $IMAGE_TAG"
           cd /home/ec2-user
           aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.eu-north-1.amazonaws.com
           docker-compose -f /home/ec2-user/docker-compose.server.yml pull order-matching-service
