@@ -34,7 +34,7 @@ jobs:
       env:
         AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         ECR_REPOSITORY: order-matching-service
-        IMAGE_TAG: ${GITHUB_SHA::8}
+        IMAGE_TAG: ${{ github.sha.substring(0, 8) }}
         AWS_REGION: eu-north-1
       run: |
         mvn package -DskipTests
