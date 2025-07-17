@@ -50,6 +50,6 @@ jobs:
         script: |
           cd /home/ec2-user/app
           aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.eu-north-1.amazonaws.com
-          docker-compose -f /home/ubuntu/app/docker-compose.server.yml pull order-matching-service
-          docker-compose -f /home/ubuntu/app/docker-compose.server.yml up -d
+          docker-compose -f /home/ec2-user/app/docker-compose.server.yml pull order-matching-service
+          docker-compose -f /home/ec2-user/app/docker-compose.server.yml up -d
     
