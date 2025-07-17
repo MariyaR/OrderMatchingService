@@ -36,7 +36,7 @@ services:
       - mynetwork
 
   order-matching-service:
-    image: 642902937286.dkr.ecr.eu-north-1.amazonaws.com/order-matching-service:latest
+    image: 642902937286.dkr.ecr.eu-north-1.amazonaws.com/order-matching-service:${IMAGE_TAG}
     container_name: order-matching-service
     ports:
       - "8080:8080"
