@@ -19,6 +19,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Cache Maven local repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          maven-${{ runner.os }}-   
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
