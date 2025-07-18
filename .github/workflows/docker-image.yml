@@ -30,11 +30,14 @@ jobs:
     - name: Bump patch version
       id: bump_version
       run: |
-        IFS='.' read -r major minor patch <<<"${{ steps.get_tag.outputs.latest_tag#v }}"
+        latest_tag="${{ steps.get_tag.outputs.latest_tag }}"
+        # Remove leading 'v' if exists
+        version="${latest_tag#v}"
+        IFS='.' read -r major minor patch <<<"$version"
         patch=$((patch + 1))
         new_tag="v$major.$minor.$patch"
         echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
-
+        
     - name: Create and push new tag
       run: |
         git config user.name "github-actions[bot]"
