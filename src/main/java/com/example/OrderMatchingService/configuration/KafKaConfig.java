@@ -20,6 +20,6 @@ public class KafKaConfig {
 
   @Bean
   public NewTopic topic2() {
-    return new NewTopic(orderCreatedTopic, 5, (short) 2);
+    return new NewTopic(orderCreatedTopic, 5, (short) 1);
   }
 }
