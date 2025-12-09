@@ -2,6 +2,8 @@ package com.example.OrderMatchingService.controller;
 
 import com.example.OrderMatchingService.dto.OrderBookDTO;
 import com.example.OrderMatchingService.service.OrderBookService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,6 @@ public class OrderBookController {
 
     @GetMapping()
     public OrderBookDTO getOrderBook() {
-
       return orderBookService.getOrderBook();
     }
 }

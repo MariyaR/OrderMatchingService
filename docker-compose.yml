@@ -50,7 +50,7 @@ services:
       - "8082:8080"  # Expose on host port 8082
     volumes:
       - ./keycloak:/opt/keycloak/data
-      - keycloak_data:/opt/keycloak/persistent_data
+      #- keycloak_data:/opt/keycloak/persistent_data
     networks:
       - mynetwork
     restart: unless-stopped

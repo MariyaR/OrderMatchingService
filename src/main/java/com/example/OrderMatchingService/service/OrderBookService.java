@@ -2,6 +2,7 @@ package com.example.OrderMatchingService.service;
 
 import com.example.OrderMatchingService.domain.Order;
 import com.example.OrderMatchingService.dto.OrderBookDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 public class OrderBookService {
 
     private final OrderBookFactory orderBookFactory;
+    @Autowired
     private final OrderBookMapper orderBookMapper;
 
     public OrderBookService(OrderBookFactory orderBookFactory, OrderBookMapper orderBookMapper) {
@@ -43,6 +45,6 @@ public class OrderBookService {
                         .toList();
 
 
-        return OrderBookMapper.toDTO(buyOrders, sellOrders);
+        return orderBookMapper.toDTO(buyOrders, sellOrders);
     }
 }
