@@ -32,8 +32,13 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal balance;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "ticker_type")
+    @CollectionTable(
+      name = "account_tickers",
+      schema = "trade_executing",
+      joinColumns = @JoinColumn(name = "account_account_id")
+    )
     @Column(name = "ticker_quantity")
     private Map<String, Long> tickers = new HashMap<>();
 

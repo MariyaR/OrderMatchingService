@@ -1,5 +1,7 @@
 package com.example.OrderMatchingService.service;
 
+import com.example.OrderMatchingService.domain.Account;
+import com.example.OrderMatchingService.dto.UserAccountDto;
 import com.example.OrderMatchingService.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,5 +31,20 @@ public class UserService {
 
   public String getKeyCloackUserNameById (UUID id) {
     return accountRepository.findKeycloakUsernameByAccountId(id).orElseThrow(() -> new RuntimeException("Username not found"));
+  }
+
+  private UserAccountDto toDTO(Account account) {
+    return new UserAccountDto(
+      account.getKeycloakUsername(),
+      account.getAccountNumber(),
+      account.getBalance(),
+      account.getTickers()
+    );
+  }
+
+  public UserAccountDto getAccountByUserId(UUID userId) {
+    return accountRepository.findById(userId)
+      .map(this::toDTO)
+      .orElse(null);
   }
 }
